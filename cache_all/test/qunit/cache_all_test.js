@@ -2,42 +2,42 @@ module("cache_all", {
   setup: function(){
     $.Model.extend('Task', {
       attributes:{
-        user: 'User.model'
       },
+      listType: $.Model.List,
       init: function(){
-        this.cacheAll()
-        this.belongsToCached('user', 'user_id')
+        this.belongsToCached('user', 'User', 'user_id')
       },
       findAll:function(params,success,fail){
         var items = []
         for(var i = 0; i < 100; i++){
           items.push({id: i, name: 'todo'+i, user_id: i})
         }
-        return success(this.wrapMany(items))
+        return success ? success(this.wrapMany(items)) : this.wrapMany(items)
       }
     },{});
 
     $.Model.extend('User',{
       attributes: {
-        tasks: 'Task.models'
+
       },
+      listType: $.Model.List,
       init: function(){
-        this.cacheAll()
-        this.hasManyCached('tasks', 'user_id')
+        this.hasManyCached('tasks', 'Task', 'user_id')
       },
       findAll: function(params,success){
         var items = []
         for(var i = 0; i < 100; i++){
           items.push({id: i, name: 'todo'+i})
         }
-        return success(this.wrapMany(items))
+        return success ? success(this.wrapMany(items)) : this.wrapMany(items)
       }
     },{})
 
     $.Model('OtherUser', {
       attributes: {
-        tasks: 'Task.models'
+
       },
+      listType: $.Model.List,
       init: function(){
         this.hasManyCached('tasks')
       }
@@ -52,15 +52,23 @@ module("cache_all", {
 
 test("List is initialized and its methods available", function(){
 	ok(Task.hasOwnProperty('List'));
-  equals(Task.all.Class.shortName, 'List')
 });
 
-test('cached model association', function(){
-  equals(User.all[0].getTasks()[0], Task.all[0])
-  equals(Task.all[2].getUser(), User.all[2])
+test('cached association getter', function(){
+  var users = User.findAll()
+  var tasks = Task.findAll()
+  equals(users[0].attr('tasks')[0], Task.list.get(0)[0])
+  equals(tasks[2].attr('user'), User.list.get(2)[0])
 })
 
-test('can be overriden', function(){
-  equals(new OtherUser().getTasks(),'test')
+test('getters can be overriden', function(){
+  equals(new OtherUser().attr('tasks'),'test')
+})
+
+test('cached association setter', function(){
+  var users = User.findAll()
+  var tasks = Task.findAll()
+  users[0]
+
 })
 
