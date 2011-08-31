@@ -1,9 +1,12 @@
 module("cache_all", {
   setup: function(){
     $.Model.extend('Task', {
+      attributes:{
+        user: 'User.model'
+      },
       init: function(){
         this.cacheAll()
-        this.belongsToCached('User', 'user', 'user_id')
+        this.belongsToCached('user', 'user_id')
       },
       findAll:function(params,success,fail){
         var items = []
@@ -15,9 +18,12 @@ module("cache_all", {
     },{});
 
     $.Model.extend('User',{
+      attributes: {
+        tasks: 'Task.models'
+      },
       init: function(){
         this.cacheAll()
-        this.hasManyCached('Task', 'tasks', 'user_id')
+        this.hasManyCached('tasks', 'user_id')
       },
       findAll: function(params,success){
         var items = []
@@ -27,6 +33,20 @@ module("cache_all", {
         return success(this.wrapMany(items))
       }
     },{})
+
+    $.Model('OtherUser', {
+      attributes: {
+        tasks: 'Task.models'
+      },
+      init: function(){
+        this.hasManyCached('tasks')
+      }
+    },{
+      getTasks: function(){
+        return 'test'
+      }
+    })
+
   }
 });
 
@@ -41,15 +61,6 @@ test('cached model association', function(){
 })
 
 test('can be overriden', function(){
-  $.Model('OtherUser', {
-    init: function(){
-      this.hasManyCached('Task', 'tasks')
-    }
-  },{
-    getTasks: function(){
-      return 'test'
-    }
-  })
   equals(new OtherUser().getTasks(),'test')
 })
 
