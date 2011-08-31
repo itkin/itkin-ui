@@ -37,6 +37,9 @@ steal('jquery/model', 'jquery/model/list').then(function(){
     $.Model.prototype.constructor.hasMany= function(name, type, foreignKey){
       this.attributes[name] = type +'.models'
     }
+    $.Model.prototype.constructor.hasOne= function(name, type, foreignKey){
+      this.attributes[name] = type +'.model'
+    }
 
 
 })
