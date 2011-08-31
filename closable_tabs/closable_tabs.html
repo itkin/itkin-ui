@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+		<title>closable_tabs</title>
+    <LINK REL=StyleSheet HREF="../jquery-ui/themes/base/jquery.ui.all.css" TYPE="text/css" MEDIA=screen>
+        <style type='text/css'>
+            body {font-family: verdana; font-size: 12px !important;}
+            .error {border: solid 1px red;}
+            .error_text { color: red; font-size: 10px;}
+            td {padding: 3px;}
+            li span.ui-icon-close{ float: left; margin: 0.4em 0.2em 0 0; cursor: pointer;}
+        </style>
+	</head>
+	<body>
+	    <h1>Closable Tabs</h1>
+        <form>
+          <input name="label" type='text' value="new"/>
+          <input name="content" type='text' value="new content"/>
+          <input name="position" type='text' value="0"/>
+          <input type="submit" value="ajouter"/>
+        </form>
+        <ul id="tabs">
+		        <li><a href="#fragment-1"><span>One</span></a></li>
+		        <li><a href="#fragment-2"><span>Two</span></a></li>
+		        <li><a href="#fragment-3"><span>Three</span></a><span class="ui-icon ui-icon-close"></span></li>
+		    </ul>
+		    <div id="fragment-1">
+		        <p>First tab is active by default:</p>
+		    </div>
+		    <div id="fragment-2">
+		        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+		        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+		    </div>
+		    <div id="fragment-3">
+		        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+		        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+		        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+		    </div>
+		<script type='text/javascript' src='../steal/steal.js?closable_tabs,development'></script>
+    <script type="text/javascript">
+      $('form').bind('submit', function(e){
+          e.preventDefault()
+          var form = $(this),
+              pos = parseInt(form.find('input[name="position"]').val()),
+              label = form.find('input[name="label"]').val(),
+              content = form.find('input[name="content"]').val() ;
+
+         $('#tabs').itkin_closable_tabs('add',label , isNaN(pos) ? null : pos, function(tab, panel){
+           panel.html(content)
+         })
+      });
+
+      $('#tabs').itkin_closable_tabs().bind('add',function(e, tab, panel){
+        tab.trigger('activate')
+      });
+    </script>
+	</body>
+</html>

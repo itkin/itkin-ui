@@ -1,0 +1,6 @@
+<div class="field">
+  <label for="<%= $.String.underscore(basename).replace(/\[/g,'_').replace(/\]/g,'') + '_' + property %>"><%= label %></label>
+  <span class="errors"><%= errors %></span>
+  <span class="hint"><%= hint %></span>
+  <%= input %>
+</div>

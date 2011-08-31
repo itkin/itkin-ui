@@ -1,0 +1,24 @@
+<% form_for(blog, { wrapper: '//form_builder/views/default.ejs'}, function(f){ %>
+  <%= f.text_field('title', {label: 'titre'}) %>
+  <%= f.password_field( 'password', {label: 'password'}) %>
+  <%= f.hidden_field('status') %>
+  <%= f.text_area('lead', {label: 'lead'}) %>
+
+  <%= f.check_box('is_published', {value: 121, wrapper: '//form_builder/views/checkbox.ejs', label: 'checkbox 0'})%>
+
+  <%= f.check_box('is_published2', {value: 121, class: 'multiple', multiple: true, checked: true, wrapper: '//form_builder/views/checkbox.ejs', label: 'checkbox 1 checked'})%>
+  <%= f.check_box('is_published2', {value: 122, class: 'multiple', multiple: true, wrapper: '//form_builder/views/checkbox.ejs', label: 'checkbox 2'})%>
+
+  <%= f.select('io', ['a','b'], {label: 'select 1'}) %>
+  <%= f.select('io', ['a','b'], {multiple: true, value: 'b', label: 'select multiple'}) %>
+  <div class="comments">
+    <% f.fields_for('comments', function(g, index){ %>
+      <%= g.text_field('id', {label: 'id du comment'}) %>
+      <%= g.text_area('text', {label: 'texte'}) %>
+      <% g.fields_for('user_attributes', g.model.user, function(i){ %>
+        <%= i.text_field('name', {label: 'utlisateur'}) %>
+      <% }) %>
+    <% }) %>
+  </div>
+<% }) %>
+
