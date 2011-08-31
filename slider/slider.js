@@ -1,4 +1,4 @@
-steal.plugins('itkin/slider/slides_container').then(function($){
+
 
   /**
    * @class Carla.Controllers.Applicants.Slider
@@ -144,4 +144,3 @@ steal.plugins('itkin/slider/slides_container').then(function($){
 
 
 
-});

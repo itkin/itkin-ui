@@ -1,4 +1,4 @@
-steal.plugins('jquery/class',
+steal('jquery/class',
 	'jquery/view',
 	'jquery/view/ejs',
   'jquery/view/helpers'
