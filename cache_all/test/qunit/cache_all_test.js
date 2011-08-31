@@ -3,8 +3,8 @@ module("cache_all", {
     $.Model.extend('Task', {
       attributes:{
       },
-      listType: $.Model.List,
       init: function(){
+        this.cacheAll()
         this.belongsToCached('user', 'User', 'user_id')
       },
       findAll:function(params,success,fail){
@@ -20,8 +20,9 @@ module("cache_all", {
       attributes: {
 
       },
-      listType: $.Model.List,
+
       init: function(){
+        this.cacheAll()
         this.hasManyCached('tasks', 'Task', 'user_id')
       },
       findAll: function(params,success){
@@ -52,23 +53,18 @@ module("cache_all", {
 
 test("List is initialized and its methods available", function(){
 	ok(Task.hasOwnProperty('List'));
+  equal(User.list.length,100)
+  equal(Task.list.length,100)
 });
 
 test('cached association getter', function(){
-  var users = User.findAll()
-  var tasks = Task.findAll()
-  equals(users[0].attr('tasks')[0], Task.list.get(0)[0])
-  equals(tasks[2].attr('user'), User.list.get(2)[0])
+  equals(User.list[0].attr('tasks')[0], Task.list.get(0)[0])
+  equals(Task.list[2].attr('user'), User.list.get(2)[0])
 })
 
 test('getters can be overriden', function(){
   equals(new OtherUser().attr('tasks'),'test')
 })
 
-test('cached association setter', function(){
-  var users = User.findAll()
-  var tasks = Task.findAll()
-  users[0]
 
-})
 

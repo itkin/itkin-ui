@@ -26,6 +26,13 @@ steal('jquery/model', 'jquery/model/list').then(function(){
       }
     }
 
+    $.Model.prototype.constructor['cacheAll'] = function(){
+      if (!this.hasOwnProperty('listType')){
+        this.listType = $.Model.List
+        this.list = new this.listType([]);
+      }
+      this.findAll()
+    }
 
   })(jQuery)
 
