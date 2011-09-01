@@ -8,7 +8,6 @@ steal('funcunit/qunit','./associations.js', 'jquery/dom/fixture', function(){
           name: "string"
         },
         listType: $.Model.List,
-
         init: function(){
           this.hasMany('tasks', 'Task')
         },
@@ -69,6 +68,14 @@ steal('funcunit/qunit','./associations.js', 'jquery/dom/fixture', function(){
     task.attr('user_id', users[2])
     equal(task.attr('user'), User.list.get(2)[0])
     equal(task.attr('user_id'), users[2].id)
+
+  })
+  test("serialization", function(){
+    var users = User.findAll()
+    var tasks = Task.findAll()
+
+    ok(!tasks[0].serialize(true).hasOwnProperty('user'))
+    equal(users[0].serialize(true).tasks_attributes[0].name, 'task 0')
 
   })
 
