@@ -24,7 +24,7 @@ steal('jquery/model').then(function(){
         var isModel = base instanceof $.Model,
             attr = arr[i],
             get = 'get' + $.String.classize(attr)
-        if(isModel && (base.Class.attributes.hasOwnProperty(attr) || base.Class.hasOwnProperty(get)) ){
+        if(isModel && (base.Class.attributes.hasOwnProperty(attr) || base.Class.prototype.hasOwnProperty(get)) ){
           base = base.attr(attr)
         } else if(typeof base[attr] == 'function'){
           base = (i == arr.length - 1) ? base[attr].apply(base,args) : base[attr]()
