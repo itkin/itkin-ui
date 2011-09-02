@@ -75,7 +75,7 @@ steal('funcunit/qunit','./associations.js', 'jquery/dom/fixture', function(){
     var tasks = Task.findAll()
 
     ok(!tasks[0].serialize(true).hasOwnProperty('user'))
-    equal(users[0].serialize(true).tasks_attributes[0].name, 'task 0')
+    equal(users[0].serialize(true).tasks[0].name, 'task 0')
 
   })
 

@@ -1,9 +1,6 @@
 steal('jquery/model', 'jquery/model/list').then(function(){
 
   (function($){
-
-
-
     $.Model.prototype.constructor.belongsToCached = function(name, type, foreignKey){
       this.attributes[foreignKey] = 'number';
       var cap = $.String.classize(name)
@@ -31,7 +28,7 @@ steal('jquery/model', 'jquery/model/list').then(function(){
         this.listType = $.Model.List
         this.list = new this.listType([]);
       }
-      this.findAll()
+      this.findAll({})
     }
 
   })(jQuery)

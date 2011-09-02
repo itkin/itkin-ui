@@ -30,21 +30,9 @@ steal('jquery/model', 'jquery/model/list').then(function(){
   }
   $.Model.prototype.constructor.hasMany= function(name, type, foreignKey){
     this.attributes[name] = type +'.models'
-    // prevent the assoc to be sent back
-    if (this.hasOwnProperty('backendSerialize')){
-      this.backendSerialize[name] = {
-        'key': name + '_attributes'
-      }
-    }
-
   }
   $.Model.prototype.constructor.hasOne= function(name, type, foreignKey){
     this.attributes[name] = type +'.model'
-    if (this.hasOwnProperty('backendSerialize')){
-      this.backendSerialize[name] = {
-        'key': name + '_attributes'
-      }
-    }
   }
 
 })
