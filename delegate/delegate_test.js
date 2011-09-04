@@ -1,21 +1,17 @@
 steal('funcunit/qunit','./delegate.js', 'jquery/dom/fixture', function(){
+
   module("delegate", {
+
     setup: function(){
 
       $.Model.extend('User',{
         attributes: {
+          rank: "number",
           name: "string",
           tasks: "Task.models"
         },
         init: function(){
-          this.delegate('getTasksNumber', 'tasks.length')
-        },
-        findAll: function(params,success){
-          var items = []
-          for(var i = 0; i < 100; i++){
-            items.push({id: i, name: 'user '+i, tasks: [{id:i, name: 'task '+i}]})
-          }
-          return success ? success(this.wrapMany(items)) : this.wrapMany(items)
+          this.delegate('length', {to: 'tasks'})
         }
       },{
         fullName: function(type){
@@ -27,26 +23,24 @@ steal('funcunit/qunit','./delegate.js', 'jquery/dom/fixture', function(){
       $.Model.extend('Task', {
         attributes:{
           name: "string",
-          user: "User.model"
+          user: "User.model",
+          otherUser: "User.model"
         },
-        delegates: {
-          'getUserName': 'user.name'
+        delegations: {
+          user: 'name',
+          otherUser: ['name', {prefix: 'test'}]
         },
         init: function(){
-          this.delegate('userFullName', 'user.fullName')
-        },
-        findAll:function(params, success,fail){
-          var items = []
-          for(var i = 0; i < 100; i++){
-            items.push({id: i, name: 'task '+i, user: {id: i, name: "user "+i}})
-          }
-          return success ? success(this.wrapMany(items)) : this.wrapMany(items)
+          this.delegate('fullName', { to: 'user', attr: false } )
+          this.delegate('rank', { to: 'otherUser', prefix: false } )
+
         }
       },{});
 
 
     }
   });
+
   test('model delegation', function(){
     var task = new Task({name: 'task', user:{name: 'user'}})
     equal(task.attr('userName'), 'user')
@@ -57,10 +51,16 @@ steal('funcunit/qunit','./delegate.js', 'jquery/dom/fixture', function(){
   })
   test('delegate to function', function(){
     var user = new User({name: 'user', tasks:[{name: 'task'}]})
-    equal(user.attr('tasksNumber'), 1)
+    equal(user.attr('tasksLength'), 1)
   })
   test('provide arguments to last delegated function', function(){
     var task = new Task({name: 'task', user:{name: 'user'}})
     equal(task.userFullName('Mr'), 'Mr user')
   })
+  test('custom delegation name', function(){
+    var task = new Task({name: 'task', otherUser:{rank:2, name: 'user'}})
+    equal(task.attr('rank'), 2)
+    equal(task.attr('testName'), "user")
+  })
+
 });
