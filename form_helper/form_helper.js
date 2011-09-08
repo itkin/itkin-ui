@@ -1,8 +1,8 @@
 steal('jquery/class',
 	'jquery/view',
-	'jquery/view/ejs',
-  'jquery/view/helpers'
-  ).then(function($){
+	'jquery/view/ejs'
+
+  ).then('jquery/view/helpers', function($){
 
     var underscore = $.String.underscore,
         formHelperFn = {}
@@ -15,7 +15,7 @@ steal('jquery/class',
 
     defaultInputId = function(inputName, append){
       append = (append == null ) ? '' : ''+ append;
-      return inputName.replace(/\]/g,'').replace(/\[/g,'_') + append
+      return $.String.underscore(inputName.replace(/\]/g,'').replace(/\[/g,'_') + append)
     }
 
     $.each(['text_field', 'password_field', 'hidden_field', 'text_area'],function(i, fnName){
@@ -52,8 +52,8 @@ steal('jquery/class',
       var inputValue = (html_options.hasOwnProperty('value'))
         ? html_options['value']
         : 1
-      var checked = html_options['checked']
-        ? true
+      var checked = html_options.hasOwnProperty('checked')
+        ? html_options['checked']
         : (model.attr(property) === true)
           ? true
           : false
@@ -83,6 +83,32 @@ steal('jquery/class',
       html_options['id'] = html_options['id'] || defaultInputId(inputName)
       return this['select_tag']( inputName, inputValue, choices, html_options )
     }
+
+
+
+
+    formHelperFn['collection_select']= function(model, property, collection, value, text, html_options){
+      var choices = $.map(collection, function(item){
+        return { value: item.attr(value), text: item.attr(text) }
+      })
+      return this['select'](model, property, choices, html_options)
+    }
+
+    var flatten = function(array){
+      return $.map(array, function(i) {return i})
+    }
+
+    formHelperFn['grouped_collection_select']= function(model, property, groupCollection, groupMethod, groupLabelMethod,  value, text, html_options){
+      var choices = flatten($.map(groupCollection, function(item){
+        var options = (typeof item[groupMethod] == 'function') ? item[groupMethod] : item.attr(groupMethod)
+        var item = item
+        return $.map(options, function(option){
+          return { groupLabel: item.attr(groupLabelMethod), groupOn: item.attr(groupLabelMethod), value: option.attr(value), text: option.attr(text) }
+        })
+      }))
+      return this['select'](model, property, choices, html_options)
+    }
+
 
     $.extend($.EJS.Helpers.prototype, formHelperFn);
 });

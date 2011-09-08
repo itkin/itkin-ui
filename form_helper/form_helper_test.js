@@ -1,20 +1,24 @@
-steal.plugins(
+steal(
 	"jquery/class",
 	'jquery/controller',
 	'jquery/model',
-	'funcunit',
+  'jquery/model/list',
   'jquery/dom/form_params',
-	'jquery/view',
-
-  'form_helper')
-.then(function(){
+	'jquery/view')
+  .then(	'funcunit')
+.then('itkin/form_helper', function(){
 
   $.Controller.extend('Cntrlr', {
     init : function(){
-      this.element.html($.View('form', {blog: blog}))
+      this.element.html($.View('form', {blog: blog, subjects: subjects}))
     }
   });
 
+  $.Model("Subject",{
+      listType: $.Model.List
+    },{
+
+    });
 	$.Model.extend("BlogPost",{
 		attributes : {
 			title        : 'string',
@@ -23,12 +27,15 @@ steal.plugins(
 			is_published : 'boolean',
 			status       : 'string',
 			tags         : 'array',
-			author       : 'string'
+			author       : 'string',
+      subjectId    : "number"
 		}
 
 	}, {});
 
-  blog = new BlogPost({title:'my title', lead: 'myLead', password:"MyPassord", status: 'MyStatus', "title3": '', "title4": null, is_published: true});
+  subjects = Subject.wrapMany([{id:1, name: 'sujet 1'},{id:2, name:'sujet 2'}])
+
+  blog = new BlogPost({title:'my title', lead: 'myLead', password:"MyPassord", status: 'MyStatus', "title3": '', "title4": null, is_published: true, subjectId:2});
 
   module("form_helper test", {
     setup: function(){
@@ -83,7 +90,7 @@ steal.plugins(
   });
 
   test("select works as expected", function(){
-    equals($("select").val(), 'a');
+    equals($("select:eq(1)").val(), 'a');
     var values = $("select:last").val()
     equals(values.length,1)
     equals(values[0],'b');
