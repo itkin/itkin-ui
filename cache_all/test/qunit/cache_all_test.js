@@ -53,13 +53,13 @@ module("cache_all", {
 
 test("List is initialized and its methods available", function(){
 	ok(Task.hasOwnProperty('List'));
-  equal(User.list.length,100)
-  equal(Task.list.length,100)
+  equal(User.all.length,100)
+  equal(Task.all.length,100)
 });
 
 test('cached association getter', function(){
-  equals(User.list[0].attr('tasks')[0], Task.list.get(0)[0])
-  equals(Task.list[2].attr('user'), User.list.get(2)[0])
+  equals(User.all[0].attr('tasks')[0], Task.all.get(0)[0])
+  equals(Task.all[2].attr('user'), User.all.get(2)[0])
 })
 
 test('getters can be overriden', function(){
