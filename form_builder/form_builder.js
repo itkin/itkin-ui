@@ -77,7 +77,7 @@ steal(
 
 
 
-    $.each(['select','hidden_field','check_box','text_field', 'password_field', 'text_area',''], function(i,fn){
+    $.each(['select', 'collection_select', 'grouped_collection_select', 'hidden_field','check_box','text_field', 'password_field', 'text_area',''], function(i,fn){
 
       FormBuilder.prototype[fn] = function(){
 
@@ -113,6 +113,8 @@ steal(
 
       }
     });
+
+
 
     $.extend($.EJS.Helpers.prototype, {form_for: FormBuilder.form_for, getFormBuilder: FormBuilder.getFormBuilder});
   });
