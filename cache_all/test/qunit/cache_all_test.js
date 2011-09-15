@@ -66,5 +66,23 @@ test('getters can be overriden', function(){
   equals(new OtherUser().attr('tasks'),'test')
 })
 
+test('cacheConstants', function(){
+ $.Model.extend('Action',{
+    attributes: {
+      name: 'string'
+    },
+    init: function(){
+      this.cacheAll({cacheAllConstantsBy: 'name'})
+    },
+    findAll: function(params, success){
+      var items = [{name: 'todo'},{name: 'forecasted'}]
+      return success ? success(this.wrapMany(items)) : this.wrapMany(items)
+    }
+  },{})
+
+  ok(Action.todo instanceof Action)
+  equal(Action.forecasted.name, 'forecasted')
+})
+
 
 

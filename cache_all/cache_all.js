@@ -29,7 +29,24 @@ steal('jquery/model', 'jquery/model/list').then(function(){
       }
     }
 
-    $.Model.prototype.constructor['cacheAll'] = function(){
+
+    // allow to cache model instance as property of their class
+    // ex : Action.cacheConsant('name', new Action({name: 'forecasted'}))
+    // Action.forecasted -> new Action({name: 'forecasted'})
+    $.Model.prototype.constructor.cacheConstants = function(property){
+      var self = this;
+      this.all.each(function(i,instance){
+        self.cacheConstant(property, instance)
+      })
+    }
+    $.Model.prototype.constructor.cacheConstant = function(property, instance){
+      this[instance.attr(property)] = instance
+    }
+
+
+    $.Model.prototype.constructor['cacheAll'] = function(options){
+      var options = options || {}
+
       if (!this.hasOwnProperty('listType')){
         this.listType = $.Model.List
       }
@@ -40,7 +57,12 @@ steal('jquery/model', 'jquery/model/list').then(function(){
           this.all.push(instances)
         }
       }
-      this.findAll({}, this.callback('setAll'))
+      if(options.cacheAllConstantsBy){
+        this.findAll({}, this.callback(['setAll', function(){ return options.cacheAllConstantsBy }, 'cacheConstants']))
+      } else {
+        this.findAll({}, this.callback('setAll'))
+      }
+
     }
 
   })(jQuery)
