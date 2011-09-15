@@ -39,17 +39,12 @@
 	</head>
 	<body>
 	    <h1>Welcome to Uploader demo ! </h1>
-      <div id="uploader"></div>
+      <input id="uploader" type="file" multiple/>
+      <ul id="list"></ul>
 	<script type='text/javascript' src='../../steal/steal.js?'></script>
   <script type="text/javascript">
-    steal('itkin/uploader').then(function(){
-      $.Model('MyFile',{
-
-      },{
-
-      });
-      $('#uploader').itkin_uploader({model: MyFile})
-
+    steal('itkin/uploader/uploader2.js').then(function(){
+      $('#uploader').fileupload({uploadTemplate: '//itkin/uploader/views/upload2.ejs', downloadTemplate: '//itkin/uploader/views/download2.ejs'})
     })
   </script>
 	</body>

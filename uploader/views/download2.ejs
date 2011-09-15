@@ -1,0 +1,21 @@
+<tr class="template-download <%= if (error) "ui-state-error" %>">
+    <% if(error){ %>
+        <td></td>
+        <td class="name"><%= name %></td>
+        <td class="size"><%= sizef %></td>
+        <td class="error" colspan="2"> Error: <%= error %>
+
+        </td>
+    <% }else {%>
+        <td class="preview">
+        </td>
+        <td class="name">
+            <a href="#"><%= name%></a>
+        </td>
+        <td class="size"><%= sizef %></td>
+        <td colspan="2"></td>
+    <td class="delete">
+        <button data-type="${delete_type}" data-url="${delete_url}">Delete</button>
+    </td>
+    <% } %>
+</tr>

@@ -1,0 +1,12 @@
+
+<input type="file" multiple/>
+<ul>
+  <% var self = this %>
+  <% if (this.options.model instanceof $.Model.List){ %>
+    <% this.options.model.each(function(i,item){ %>
+      <%== $.View(self.options.downloadTemplate, item, {formatFileSize: self._formatFileSize}) %>
+    <% }) %>
+  <% } else if (this.options.model.Class){ %>
+    <%== $.View(self.options.downloadTemplate, model, {formatFileSize: self._formatFileSize}) %>
+  <% } %>
+</ul>

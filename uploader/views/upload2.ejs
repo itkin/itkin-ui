@@ -3,11 +3,9 @@
   <span class="size"><%= formatFileSize(size) %></span>
   <% if(errors.length != 0){ %>
     <span class="errors"><%= errors.join(', ') %></span>
-    <a href="#" class="remove" <%= plugin('button',{text: false, icons: {primary: 'ui-icon-cancel'}}) %>>Remove</a>
   <% } else { %>
     <div class="progress" <%=plugin('progressbar')%>></div>
     <a class="start" href="#" ></a>
-    <a class="cancel" href="#" <%= plugin('button',{text: false, icons: {primary: 'ui-icon-cancel'}}) %>>Cancel</a>
+    <a class="cancel" href="#" <%= plugin('button',{text: false, icons: {primary: 'ui-icon-cancel'}}) %>></a>
   <% } %>
-
 </li>

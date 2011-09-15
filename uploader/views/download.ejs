@@ -1,5 +1,5 @@
-<li>
-  <span class="name"><%= binaryFileName %></span>
-  <span class="size"><%= formatFileSize(binaryFileSize) %></span>
-  <span class="delete">
+<li class="template-download">
+  <span class="name"><%= attr('binaryFileName') %></span>
+  <span class="size"><%= formatFileSize(attr('binaryFileSize')) %></span>
+  <a class="delete" <%= plugin('button',{text: false, icons: {primary: 'ui-icon-cancel'}})%> >supprimer</a>
 </li>
