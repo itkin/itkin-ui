@@ -18,6 +18,22 @@ steal(
         callback(f)
         //return '<form>'+callback(f)+'</form>'
       },
+      fields_for: function(basename, model, options, proc){
+        proc = arguments[arguments.length-1]
+        options = $.isPlainObject(options) ? options : {}
+
+        if (typeof basename == 'string' && !(model instanceof $.Model) ){
+          model = $.String.getObject(basename)
+          basename = $.String.camelize(model.Class.shortName)
+        } else if (basename instanceof $.Model){
+          model = basename
+          basename = $.String.camelize(model.Class.shortName)
+        }
+
+        var f = new FormBuilder({model: model, viewContext: this, wrapper: options.wrapper, basename: basename})
+        proc(f)
+
+      },
       getFormBuilder: function(modelInstance, options){
         options = options || {}
         return new FormBuilder({
@@ -116,5 +132,5 @@ steal(
 
 
 
-    $.extend($.EJS.Helpers.prototype, {form_for: FormBuilder.form_for, getFormBuilder: FormBuilder.getFormBuilder});
+    $.extend($.EJS.Helpers.prototype, {fields_for: FormBuilder.fields_for, form_for: FormBuilder.form_for, getFormBuilder: FormBuilder.getFormBuilder});
   });
