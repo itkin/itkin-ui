@@ -1,0 +1,9 @@
+<% for(column in columns){ %>
+  <td class="<%= column %>">
+    <% if (renderer.hasOwnProperty(column)){ %>
+      <%== renderer[column](this) %>
+    <% } else  { %>
+      <%= this.attr(column) %>
+    <% } %>
+  </td>
+<% } %>

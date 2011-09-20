@@ -9,9 +9,11 @@ Mxui.Data.Grid.extend('Itkin.List',
 /** @Static */
 {
 	defaults : {
-    row: '//carla/controllers/follow_ups/list/views/item.ejs',
-    form: '//carla/controllers/follow_ups/list/views/form.ejs',
-    columns:{createdAt:'Suivi', buttons: 'Actions'},
+    rowTemplate: '//itkin/list/views/row.ejs',
+    formTemplate: '//itkin/list/views/form.ejs',
+    loadingTemplate: '//itkin/list/views/loading',
+    listTemplate: '//itkin/list/views/list',
+    columns:{},
     loadImmediate: true,
     applicant: null,
     model: null,
@@ -24,13 +26,16 @@ Mxui.Data.Grid.extend('Itkin.List',
     editClass: "edit",
     cancelClass: "cancel",
     deleteClass: "delete",
-    instanceBelongsToList: null
+    instanceBelongsToList: null,
+    nbColumns: 0,
+    renderer: {}
   }
 },
 /** @Prototype */
 {
 
   setup: function(elt,options){
+    options = options || {}
 
     options.model = options.model || options.list.Class.namespace
 
@@ -52,8 +57,13 @@ Mxui.Data.Grid.extend('Itkin.List',
   },
 
   init: function(){
+    var self = this
     this.element.mxui_layout_fill()
     this._super.apply(this)
+
+    // store the number of column
+    $.each(this.options.columns, function(i){ self.options.nbColumns++})
+
 
     // list the list passed in option instead of calling findAll on init
     if (this.options.list.length > 0){
@@ -80,24 +90,28 @@ Mxui.Data.Grid.extend('Itkin.List',
 
   // adding some drawing function for listing, updating a row and prepending a new instance form
   list: function(clear,items){
-    this._super.apply(this, arguments)
+    this.curentParams = this.options.params.attrs();
+
+		this.options.params.attr('updating', false);
+
+    var trs = this._getRows('rowTemplate', items)
+
+		if(clear){
+			this.empty();
+		}
+
+		this.append(trs);
+		// update the items
+		this.options.params.attr('count',items.count)
+
+    // added by me
     this.options.list.push(items)
     this.element.trigger('listed', [items, this.options.list])
   },
-  update: function(row, view, instance){
-    var trs = $(this.view('list',{
-      row : this.options[view],
-      items: [instance]
-    }));
-    row.replaceWith(trs)
-    this.element.trigger('resize')
-  },
+
   "new": function(instance){
-    var trs = $(this.view('list',{
-      row : this.options.form,
-      items: [instance || new this.options.model()]
-    }));
-    this.prepend(trs)
+    var tr = this._getRows('formTemplate', (instance || new this.options.model()))
+    this.options.append(this.$.tbody, tr )
   },
   // override created handler to
   "{model} created" : function(model, ev, item){
@@ -121,19 +135,23 @@ Mxui.Data.Grid.extend('Itkin.List',
     })
   },
   ".{deleteClass} click": function(elt, e){
-    elt.closest('tr').model().destroy()
+      elt.closest('tr').model().destroy()
   },
+
   ".{editClass} click": function(elt, e){
-    var $item = elt.closest('tr');
-    this.update($item, 'form', $item.model())
+    var el = elt.closest('tr'),
+        form = this._getRows('formTemplate', el.model())
+    this.options.refresh(this.$.tbody, el, form)
+
   },
   ".{cancelClass} click": function(elt, e){
-    var $item = elt.closest('tr');
-    if ($item.model().isNew()){
-      $item.remove()
-      this.element.trigger('resize',false)
+    var el = elt.closest('tr'),
+        newElt = this._getRows('rowTemplate', el.model())
+
+    if (el.model().isNew()){
+      this.options.remove(this.$.tbody, el)
     } else {
-      this.update($item, 'row', $item.model())
+      this.options.refresh(this.$.tbody, el, newElt)
     }
 
   },
@@ -150,7 +168,7 @@ Mxui.Data.Grid.extend('Itkin.List',
   "{params} updated.attr": function(params, e, attr, val, old){
     this._super.apply(this, arguments)
     if (attr == 'updating' && val && val != old){
-      this.append($(this.view('loading')))
+      this.append($(this.view(this.options.loadingTemplate, {count: this.options.nbColumns})))
     } else if(attr == 'updating' && !val && val != old){
       this.$.tbody.find('tr.loading').remove()
     }
