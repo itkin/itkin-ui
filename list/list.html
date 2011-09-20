@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+		<title>Carla.Controllers.FollowUps.List</title>
+
+    <LINK REL=StyleSheet HREF="../../jquery-ui/themes/base/jquery.ui.all.css" TYPE="text/css" MEDIA=screen>
+    <style type='text/css'>
+        body {font-family: verdana}
+        .error {border: solid 1px red;}
+        .error_text { color: red; font-size: 10px;}
+        td {
+          padding: 3px;
+        }
+    </style>
+	</head>
+	<body>
+	    <h1>Carla.Controllers.Itkin.List Demo</h1>
+		<button class="refresh">Refresh</button>
+    <button class="new">New</button>
+    <span id="count">0</span>
+    <div id='list'></div>
+		<script type='text/javascript'   src='../../steal/steal.js'></script>
+		<script type='text/javascript'>
+			steal('itkin/list', 'jquery/dom/fixture').then(function(){
+        $.Model('MyTest', {
+          findAll: '-my_tests'
+        },{});
+        $.Model.List('MyTest.List', {
+
+        });
+        $.fixture.make('my_test', 20, function(i){
+          return{
+            name: "my test " + i,
+            value: i
+          }
+        })
+
+				$('#list').itkin_list({
+          model: MyTest,
+          row: '//itkin/list/views/item.ejs',
+          form: '//itkin/list/views/form.ejs',
+          columns: {
+            name:'name',
+            value: 'value',
+            actions: 'actions'
+          },
+          instanceBelongsToList: function( item ){
+            return item.value !== ''
+          }
+
+        });
+        $("#list").controller().options.params.bind('count', function(e, val){
+          $('#count').text(val)
+        })
+        $('.refresh').click(function(){
+          $('#list').controller().refresh()
+        })
+        $('.new').click(function(){
+          $('#list').controller().new()
+        })
+			})
+		</script>
+	</body>
+</html>
