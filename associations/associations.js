@@ -19,13 +19,13 @@ steal('jquery/model', 'jquery/model/list').then(function(){
       }
     }
 
-    cap = $.String.classize(foreignKey)
-
-    if(!this.prototype.hasOwnProperty('set'+cap)){
-      this.prototype['set'+cap] = function(value, _updateProperty, errorCallback){
-        this.attr(name, $.Class.getObject(type).list.get(value)[0])
-      }
-    }
+//    cap = $.String.classize(foreignKey)
+//
+//    if(!this.prototype.hasOwnProperty('set'+cap)){
+//      this.prototype['set'+cap] = function(value, _updateProperty, errorCallback){
+//        this.attr(name, $.Class.getObject(type).list.get(value)[0])
+//      }
+//    }
 
   }
   $.Model.prototype.constructor.hasMany= function(name, type, foreignKey){
