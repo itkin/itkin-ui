@@ -26,7 +26,7 @@ Mxui.Data.Grid.extend('Itkin.List',
     editClass: "edit",
     cancelClass: "cancel",
     deleteClass: "delete",
-    instanceBelongsToList: null,
+    instanceBelongsToList: function(){return true},
     nbColumns: 0,
     renderer: {}
   }
@@ -115,13 +115,13 @@ Mxui.Data.Grid.extend('Itkin.List',
   },
   // override created handler to
   "{model} created" : function(model, ev, item){
-    if (this.options.instanceBelongsToList && this.options.instanceBelongsToList.apply(this, [item])){
+    if (this.options.instanceBelongsToList.apply(this, [item])){
       this._super.apply(this,arguments)
       this.options.params.attr('count', this.options.params.attr('count') +1)
     }
   },
   "{model} destroyed" : function(model, ev, item){
-    if (this.options.instanceBelongsToList && this.options.instanceBelongsToList.apply(this, [item])){
+    if (this.options.instanceBelongsToList.apply(this, [item])){
       this._super.apply(this,arguments)
       this.options.params.attr('count', this.options.params.attr('count') -1)
     }
@@ -130,8 +130,9 @@ Mxui.Data.Grid.extend('Itkin.List',
   // some events stuff
   "form submit": function(elt,e){
     e.preventDefault()
-    elt.closest('tr').model().update(elt.formParams()[$.String.camelize(this.options.model.shortName)], function(){
-      elt.closest('tr').remove()
+    var tr = elt.closest('tr')
+    tr.model().update(elt.formParams()[$.String.camelize(tr.model().Class.shortName)], function(){
+      tr.remove()
     })
   },
   ".{deleteClass} click": function(elt, e){

@@ -13,7 +13,7 @@ steal('jquery/model', 'jquery/model/list').then(function(){
 
     if(!this.prototype.hasOwnProperty('set'+cap)){
       this.prototype['set'+cap] = function(value, _updateProperty, errorCallback){
-        var childIdName = $.Class.getObject(type).id
+        var childIdName = $.String.getObject(type).id
         this[foreignKey] = value.hasOwnProperty(childIdName) ? value[childIdName] : null
         _updateProperty()
       }
@@ -23,7 +23,7 @@ steal('jquery/model', 'jquery/model/list').then(function(){
 //
 //    if(!this.prototype.hasOwnProperty('set'+cap)){
 //      this.prototype['set'+cap] = function(value, _updateProperty, errorCallback){
-//        this.attr(name, $.Class.getObject(type).list.get(value)[0])
+//        this.attr(name, $.String.getObject(type).list.get(value)[0])
 //      }
 //    }
 
