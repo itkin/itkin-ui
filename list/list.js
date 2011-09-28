@@ -15,7 +15,6 @@ Mxui.Data.Grid.extend('Itkin.List',
     listTemplate: '//itkin/list/views/list',
     columns:{},
     loadImmediate: true,
-    applicant: null,
     model: null,
     listType: null,
     offsetEmpties: false,
@@ -29,6 +28,15 @@ Mxui.Data.Grid.extend('Itkin.List',
     instanceBelongsToList: function(){return true},
     nbColumns: 0,
     renderer: {}
+  },
+
+  models:function(models){
+    var self = this
+    $($.makeArray(arguments)).each(function(i, model){
+      $(["created", "updated", "destroyed"]).each(function(j,event){
+        self.prototype["{"+model.fullName+"} "+event] = self.prototype["{model} "+event]
+      })
+    })
   }
 },
 /** @Prototype */
@@ -74,6 +82,7 @@ Mxui.Data.Grid.extend('Itkin.List',
     if (this.options.offsetEmpties == false){
       this.bind(this.$.scrollBody, 'scroll', 'scroll')
     }
+
 
   },
 
