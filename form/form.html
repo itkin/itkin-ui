@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+		<title>slider</title>
+        <style type='text/css'>
+            body {font-family: verdana}
+            .error {border: solid 1px red;}
+            .error_text { color: red; font-size: 10px;}
+            td {padding: 3px;}
+        </style>
+	</head>
+	<body>
+	    <h1>Welcome to Form demo ! </h1>
+      <form>
+        <input name="myTest[name]"/><br/>
+        <input name="myTest[value]"/><br/>
+        <input name="myTest[assoc][name]"/>
+        <div name="myTest[multiAssoc]"></div>
+        <button type="submit">OK</button>
+        <button class="cancel" type="button">Annuler</button>
+      </form>
+	<script type='text/javascript' src='../../steal/steal.js?'></script>
+  <script type="text/javascript">
+    steal('jquery/dom/fixture', 'itkin/form').then(function(){
+      $.Model('Assoc',{
+        attributes:{
+          name: 'string'
+        },
+        init: function(){
+          this.validatePresenceOf('name', {message: 'name must be set'})
+        }
+      },{})
+      $.Model('MultiAssoc',{
+        attributes:{
+          name: 'string'
+        },
+        init: function(){
+
+        }
+      },{})
+      $.Model('MyTest',{
+        attributes: {
+          name: 'string',
+          value: 'number',
+          assoc: "Assoc.model",
+          multiAssoc: "MultiAssoc.models"
+        },
+        init: function(){
+          this.validateFormatOf('name', /a/, {message: 'name format is not correct'})
+          this.validatePresenceOf('name', {message: 'name must be set'})
+          this.validate('multiAssoc', function(){
+            if (this.multiAssoc.length == 0){
+              return 'multi assoc should be at least one'
+            }
+          })
+          this.validate('assoc.name', function(){
+            if (this.assoc.name == ''){
+              return 'assoc name must be set'
+            }
+          })
+        }
+      },{
+      })
+      var object = new MyTest({multiAssoc:[]})
+      $('form').itkin_form({object: object}).bind('cancel', function(){
+        console.log($(this).controller().options.object)
+      })
+    })
+  </script>
+	</body>
+</html>
