@@ -32,7 +32,7 @@ steal(
 
         var f = new FormBuilder({model: model, viewContext: this, wrapper: options.wrapper, basename: basename})
         proc(f)
-
+        return f
       },
       getFormBuilder: function(modelInstance, options){
         options = options || {}
