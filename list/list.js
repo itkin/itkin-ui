@@ -143,7 +143,7 @@ $.Controller('Itkin.List',
     }
 
     // bind scroll on scrollbody (delegation doesn t work)
-    if (this.options.offsetEmpties == false){
+    if (this.options.offsetEmpties == false && this.$.scrollBody){
       this.bind(this.$.scrollBody, 'scroll', 'scroll')
     }
 
@@ -199,7 +199,7 @@ $.Controller('Itkin.List',
 
     // added by me
     this.options.list.push(items)
-    this.element.trigger('listed', [items, this.options.list])
+    this.element.trigger('listed', [items, this.options.list, trs])
   },
 
   "new": function(instance){

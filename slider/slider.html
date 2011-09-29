@@ -8,21 +8,6 @@
             .error {border: solid 1px red;}
             .error_text { color: red; font-size: 10px;}
             td {padding: 3px;}
-          #slider{
-            position: relative
-          }
-          .next{
-            float: right;
-            right: 0
-          }
-          .prev, .next{
-            display: block;
-            height: 100%;
-            width: 15%;
-            position: absolute;
-            background: grey;
-            top: 50px
-          }
         </style>
 	</head>
 	<body>
@@ -32,57 +17,44 @@
       </div>
 	<script type='text/javascript' src='../../steal/steal.js?'></script>
   <script type="text/javascript">
-    steal('jquery/dom/fixture',
-        'jquery/model',
-        'jquery/controller',
-        'jquery/view/ejs',
-        'mxui/layout/fill',
-        'mxui/layout/resize',
-        'mxui/util/selectable',
-        "jquery/event/default",
-        'jquery/event/pause',
-        'jquery/dom/dimensions',
-        'jquery/dom/form_params',
-        'itkin/slider').then(function($){
-
-        $.fixture.make('slide',20,function(i){
-          return {name: "Slide num "+i, id:i}
-        })
-        $.Controller("MyTest.SlideController",
-          {
-            defaults:{
-              model: null
-            }
+    steal('itkin/slider', 'jquery/dom/fixture').then(function(){
+        $.Model('MyTest', {
+          attributes:{
+            name: 'string',
+            value: 'number'
           },
-          {
-            init: function(){
-              //this.element.mxui_layout_fill()
-              this.element.html(this.options.model.name).attr('id', 'slide_'+this.options.model.id)
-            },
-            "resize": function(){
-              this.element.outerHeight(this.element.parent().innerHeight())
-              this.element.outerWidth(this.element.parent().innerWidth())
-            }
-          }
-        )
-        $.Model('MyTest.SlideModel',{
-          findAll: function(params,success){
-            $.ajax({data:params, fixture:'-slides', success: this.callback(['wrapMany',success])})
-          }
-        },{})
+          findAll: '-my_tests'
+        },{});
 
-        $('#slider').itkin_slider({
-          model: MyTest.SlideModel,
-          type: MyTest.SlideController,
-          params: new Mxui.Data({limit: 10, buffer: 4 })
-        }).bind('sliding', function(e, current, next){
-            if (next.length){
-              current.hide()
-              next.show()
-            } else {
-              e.preventDefault()
-            }
-       })
+        $.fixture.make('my_test', 20, function(i){
+          return{
+            name: "my test " + i,
+            value: i
+          }
+        })
+
+				$('#slider').itkin_slider({
+          model: MyTest,
+          instanceBelongsToList: function( item ){
+            return item.value !== ''
+          },
+          renderer: function(item){
+            return $.String.underscore(item.attr("name")) +' '+ item.attr('value')
+          }
+        });
+
+//        $('#slider').itkin_slider({
+//          model: MyTest,
+//         // type: MyTest.SlideController,
+//          params: new Mxui.Data({limit: 10, buffer: 4 })
+//        }).bind('sliding', function(e, current, next){
+//            if (next.length){
+//              current.hide()
+//              next.show()
+//            } else {
+//              e.preventDefault()
+//            }
+//       })
 // .bind("default.sliding", function(elt, e, current, next ){
 //          if (next && next.length != 0)
 //            this.options.selected = next.index()

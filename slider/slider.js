@@ -1,46 +1,30 @@
-steal('mxui/data', 'jquery/controller/view').then(function($){
-
-
-
+steal('itkin/list',
+  "jquery/event/default",
+  'jquery/event/pause',
+  'jquery/dom/dimensions')
+.then(function($){
   /**
    * @class Carla.Controllers.Applicants.Slider
    */
-  $.Controller('Itkin.Slider',{
+  Itkin.List.extend('Itkin.Slider',{
   /* @Static */
     "defaults": {
-      "params": new Mxui.Data({limit: 10, buffer: 4 }),
-      "model": null,
-      "type": null,
-      "slide_template": null,
-      "slideSelector": 'div',
-      "selected": 0
+      initTemplate: '//itkin/slider/views/init.ejs',
+//      rowTemplate: '//itkin/slider/views/row.ejs',
+//      formTemplate: '//itkin/slider/views/form.ejs',
+//      loadingTemplate: '//itkin/slider/views/loading',
+//      listTemplate: '//itkin/slider/views/list',
+      rowClassName: 'slide',
+      selected: 0,
+      loadImmediate: true,
     },
     listenTo: ['sliding','before.sliding', 'slid']
-
   },
   {
-    // init variables
-    init : function(){
-      this.element.mxui_layout_fill()
-      this.element.append(this.view())
-
-      // init the elements
+    initTemplate: function(){
+      this.element.append(this.view(this.options.initTemplate))
       this.$ = {}
-      this.$.slides = this.element.children('.slides').mxui_layout_fill()
-
-      this.$.prev = this.element.children('.prev')
-      this.$.next = this.element.children('.next')
-
-      this.newRequest()
-    },
-
-    newRequest : function(attr, val){
-      var clear = true;
-      if(attr == "offset"){
-        clear = false;
-      }
-      this.options.params.attr('updating',true)
-      this.options.model.findAll(this.options.params.attrs(), this.callback('list', clear) )
+      this.$.tbody = $('div.slides', this.element).mxui_layout_fill()
     },
 
     /**
@@ -49,29 +33,10 @@ steal('mxui/data', 'jquery/controller/view').then(function($){
      * @param {Object} items
      */
     list : function(clear, items){
-      //this.currentParams = this.options.params.attrs();
-
-      var slides = $(this.view('list',{
-        slide_template : this.options.slide_template,
-        type: this.options.type,
-        items: items
-      }));
-
-      if(clear){
-        this.empty();
-      }
-
-      slides.css({display:'none', position:'absolute'})
-
-      this.append(slides);
-
-      this.options.params.attr('updating', false);
-      this.options.params.attr('count', items.count)
-
+      this._super.apply(this, arguments)
       if (clear){
         this.slide(this.options.selected)
       }
-
     },
     next: function(){
       this.slide(this.options.selected + 1)
@@ -80,12 +45,12 @@ steal('mxui/data', 'jquery/controller/view').then(function($){
       this.slide(this.options.selected - 1)
     },
     getSlide: function(index){
-      return this.$.slides.children(this.options.slideSelector).eq(index)
+      return this.$.tbody.children('.'+this.options.rowClassName).eq(index)
     },
     slide: function(target){
       if (target != -1){
         var self = this,
-            evtData = [this.getSlide(this.options.selected),this.getSlide(target)]
+            evtData = [this.getSlide(this.options.selected), this.getSlide(target)]
         this.element.triggerAsync('before.sliding', target, function(){
           self.element.triggerAsync("sliding", evtData , function(){
             self.options.selected = target
@@ -94,14 +59,11 @@ steal('mxui/data', 'jquery/controller/view').then(function($){
         })
       }
     },
-
-//    " default.sliding": function(elt, e, current, next ){
-//      if (next && next.length != 0)
-//        this.options.selected = next.index()
-//      //else {}
-//       // e.preventDefault()
-//    },
-    " before.sliding": function(elt,e, target){
+    " sliding": function(elt,e, prev,next){
+      prev.hide()
+      next.show().resize()
+    },
+   " before.sliding": function(elt,e, target){
       if (target > this.options.params.offset + this.options.params.limit){
         e.preventDefault()
       }
@@ -109,30 +71,16 @@ steal('mxui/data', 'jquery/controller/view').then(function($){
         this.options.params.attr('offset', this.options.params.attr('offset') + this.options.params.attr('limit'))
       }
     },
-
-    "{params} updated.attr" : function(params, ev, attr, val){
-      if(attr !== 'count' && attr !== 'updating'){
-        //want to throttle for rapid updates
-        params.attr('updating', true)
-        clearTimeout(this.newRequestTimer)
-        this.newRequestTimer = setTimeout(this.callback('newRequest', attr, val), 100)
-      }
-    },
-
-
-    append: function( items ) {
-      this.$.slides.append(items)
-    },
-    // remove all content from the grid
-    empty: function(){
-      this.$.slides.html('')
-    },
-
     ".prev click": function(elt,e){
+      e.preventDefault()
       this.prev()
     },
     ".next click": function(elt,e){
+      e.preventDefault()
       this.next()
+    },
+    " listed" :function(elt,e, newItems,list, trs){
+      trs.hide().mxui_layout_fill()
     }
 
 

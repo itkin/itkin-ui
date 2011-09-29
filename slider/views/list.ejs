@@ -1,7 +1,0 @@
-<% for(var i =0; i < items.length; i++){ %>
-  <% if (slide_template) { %>
-    <%== $.View(slide_template, items[i] ) %>
-  <% } else { %>
-    <div <%=  plugin(type._fullName, {model: items[i]})  %> tabindex='0'></div>
-  <% } %>
-<%}%>
