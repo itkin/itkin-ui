@@ -22,7 +22,7 @@
     <div id='list'></div>
 		<script type='text/javascript'   src='../../steal/steal.js'></script>
     <script type='text/javascript'>
-			steal('itkin/grid', 'jquery/dom/fixture').then(function(){
+			steal('itkin/list', 'jquery/dom/fixture').then(function(){
         $.Model('MyTest', {
           findAll: '-my_tests'
         },{});
@@ -36,23 +36,13 @@
           }
         })
 
-				$('#list').itkin_grid({
+				$('#list').itkin_list({
           model: MyTest,
-          row: '//itkin/list/views/row.ejs',
-          form: '//itkin/list/views/form.ejs',
-          columns: {
-            name:'name',
-            value: 'value',
-            actions: 'actions'
-          },
           instanceBelongsToList: function( item ){
             return item.value !== ''
           },
-          renderer: {
-            name: function(item){
-              return $.String.underscore(item.attr("name"))
-            },
-            actions: function(item){ return "<a href='#' class='edit'>Edit</a>" }
+          renderer: function(item){
+            return $.String.underscore(item.attr("name")) +' '+ item.attr('value')
           }
         });
         $("#list").controller().options.params.bind('count', function(e, val){
