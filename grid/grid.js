@@ -5,7 +5,7 @@ steal('jquery/model/list', 'mxui/data/grid', 'jquery/dom/form_params')
 /**
  * @class Carla.Controllers.FollowUps.List
  */
-Mxui.Data.Grid.extend('Itkin.List',
+Mxui.Data.Grid.extend('Itkin.Grid',
 /** @Static */
 {
 	defaults : {
