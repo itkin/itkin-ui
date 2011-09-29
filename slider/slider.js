@@ -1,3 +1,5 @@
+steal('mxui/data', 'jquery/controller/view').then(function($){
+
 
 
   /**
@@ -140,7 +142,8 @@
 
 
 
-  });
+  })
 
 
 
+})

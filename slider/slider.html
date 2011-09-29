@@ -32,10 +32,9 @@
       </div>
 	<script type='text/javascript' src='../../steal/steal.js?'></script>
   <script type="text/javascript">
-    steal.plugins('jquery/dom/fixture',
-        'mxui/data',
+    steal('jquery/dom/fixture',
+        'jquery/model',
         'jquery/controller',
-        'jquery/controller/view',
         'jquery/view/ejs',
         'mxui/layout/fill',
         'mxui/layout/resize',
@@ -44,7 +43,7 @@
         'jquery/event/pause',
         'jquery/dom/dimensions',
         'jquery/dom/form_params',
-        'itkin/slider').then(function(){
+        'itkin/slider').then(function($){
 
         $.fixture.make('slide',20,function(i){
           return {name: "Slide num "+i, id:i}
@@ -90,7 +89,7 @@
 //              //else {}
 //           // e.preventDefault()
 //          });
-      }).start()
+      })
   </script>
 	</body>
 </html>
