@@ -56,15 +56,16 @@ steal('mxui/nav/tabs').then(function($){
         return
       }
 
-      if(callback){
-        callback(tab,panel)
-      }
+
       this.element.nextAll(':eq('+targetTab.index()+ ')')[insert](panel)
       targetTab[insert](tab)
       $.each([tab, panel], function(i,elt){
         elt.attr('tabindex', '')
       })
 
+      if(callback){
+        callback(tab,panel)
+      }
       this.element.trigger('add', [tab, panel])
     },
     show: function(elt, e){

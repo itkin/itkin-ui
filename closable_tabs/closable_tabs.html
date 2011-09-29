@@ -3,7 +3,7 @@
 <html lang="en">
 	<head>
 		<title>closable_tabs</title>
-    <LINK REL=StyleSheet HREF="../jquery-ui/themes/base/jquery.ui.all.css" TYPE="text/css" MEDIA=screen>
+    <LINK REL=StyleSheet HREF="../../jquery-ui/themes/base/jquery.ui.all.css" TYPE="text/css" MEDIA=screen>
         <style type='text/css'>
             body {font-family: verdana; font-size: 12px !important;}
             .error {border: solid 1px red;}
@@ -37,23 +37,25 @@
 		        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
 		        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
 		    </div>
-		<script type='text/javascript' src='../steal/steal.js?closable_tabs,development'></script>
+		<script type='text/javascript' src='../../steal/steal.js'></script>
     <script type="text/javascript">
-      $('form').bind('submit', function(e){
-          e.preventDefault()
-          var form = $(this),
-              pos = parseInt(form.find('input[name="position"]').val()),
-              label = form.find('input[name="label"]').val(),
-              content = form.find('input[name="content"]').val() ;
+      steal('itkin/closable_tabs').then(function(){
+        $('form').bind('submit', function(e){
+            e.preventDefault()
+            var form = $(this),
+                pos = parseInt(form.find('input[name="position"]').val()),
+                label = form.find('input[name="label"]').val(),
+                content = form.find('input[name="content"]').val() ;
 
-         $('#tabs').itkin_closable_tabs('add',label , isNaN(pos) ? null : pos, function(tab, panel){
-           panel.html(content)
-         })
-      });
+           $('#tabs').itkin_closable_tabs('add',label , isNaN(pos) ? null : pos, function(tab, panel){
+             panel.html(content)
+           })
+        });
 
-      $('#tabs').itkin_closable_tabs().bind('add',function(e, tab, panel){
-        tab.trigger('activate')
-      });
+        $('#tabs').itkin_closable_tabs().bind('add',function(e, tab, panel){
+          tab.trigger('activate')
+        });
+      })
     </script>
 	</body>
 </html>
