@@ -17,6 +17,7 @@ steal('itkin/list',
       rowClassName: 'slide',
       selected: 0,
       loadImmediate: true,
+      buffer: 4
     },
     listenTo: ['sliding','before.sliding', 'slid']
   },
@@ -35,6 +36,7 @@ steal('itkin/list',
     list : function(clear, items){
       this._super.apply(this, arguments)
       if (clear){
+        this.options.selected = 0
         this.slide(this.options.selected)
       }
     },
@@ -67,7 +69,7 @@ steal('itkin/list',
       if (target > this.options.params.offset + this.options.params.limit){
         e.preventDefault()
       }
-      if (!this.options.params.attr('updating') && target < this.options.params.count && target + this.options.params.buffer >= this.options.params.offset + this.options.params.limit){
+      if (!this.options.params.attr('updating') && target < this.options.params.count && target + this.options.buffer >= this.options.params.offset + this.options.params.limit){
         this.options.params.attr('offset', this.options.params.attr('offset') + this.options.params.attr('limit'))
       }
     },
