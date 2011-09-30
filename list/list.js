@@ -57,7 +57,7 @@ $.Controller('Itkin.List',
     },
     append: function(tbody, newElt){
       tbody.append(newElt)
-      tbody.resize()
+      //tbody.resize()
     },
     remove: function(tbody, elt){
       elt.remove()
@@ -65,7 +65,7 @@ $.Controller('Itkin.List',
     },
     empty: function(tbody){
       tbody.html('')
-      tbody.resize()
+      //tbody.resize()
     }
 
   },
@@ -134,7 +134,7 @@ $.Controller('Itkin.List',
 
 
 		if(this.options.loadImmediate){
-			this.options.model.findAll(this.options.params.attrs(), this.callback('list', true))
+			this.makeRequest(true)
 		}
 
     // list the list passed in option instead of calling findAll on init
