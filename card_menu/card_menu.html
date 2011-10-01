@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+		<title>Itkin Card Menu</title>
+    <LINK REL=StyleSheet HREF="../../jquery-ui/themes/base/jquery.ui.all.css" TYPE="text/css" MEDIA=screen>
+        <style type='text/css'>
+            body {font-family: verdana; font-size: 12px !important;}
+            .error {border: solid 1px red;}
+            .error_text { color: red; font-size: 10px;}
+            td {padding: 3px;}
+            li span.ui-icon-close{ float: left; margin: 0.4em 0.2em 0 0; cursor: pointer;}
+            .itkin_ui_top_right_menu.ui-widget-content{
+              border: none;
+              padding: 0;
+            }
+        </style>
+	</head>
+	<body>
+	    <h1>Card Menu</h1>
+      <div id="card_menu">
+        <a href="#">Item 1 horiz</a>
+        <a href="#">Item 2 horiz</a>
+        <a href="#">Item 3 horiz</a>
+        <ul>
+          <li><a href="#">Item 4 vert</a></li>
+          <li><a href="#">Item 5 vert</a></li>
+          <li>
+            <a href="#">Item 6 vert</a>
+            <ul>
+              <li><a href="#">Item 6.1</a></li>
+              <li><a href="#">Item 6.2</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <script type='text/javascript'
+                  src='../../steal/steal.js'>
+          </script>
+      <script type="text/javascript">
+      steal('itkin/card_menu').then(function(){
+        $('#card_menu').itkin_card_menu().show()
+      })
+    </script>
+	</body>
+</html>
