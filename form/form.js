@@ -3,11 +3,11 @@ steal('jquery/controller', 'jquery/model/backup', 'jquery/model/validations','jq
 $.Controller.extend('Itkin.Form',{
   defaults: {
     basename: null,
-    object: null
+    model: null
   }
 },{
   init: function(){
-    this.options.object.backup()
+    this.options.model.backup()
   },
   propertyNameFromElt: function(elt){
     return elt.attr('name').replace(/^\w+/,'').replace(/\]\[/g,'.').replace(/\[|\]/g,'')
@@ -27,14 +27,14 @@ $.Controller.extend('Itkin.Form',{
       this.element.find('.error').remove()
   },
   basename: function(){
-    return this.options.basename || $.String.camelize(this.options.object.Class.shortName)
+    return this.options.basename || $.String.camelize(this.options.model.Class.shortName)
   },
 
 
   updateObject: function(elt){
-    this.options.object.attrs(this.element.formParams()[this.basename()])
+    this.options.model.attrs(this.element.formParams()[this.basename()])
     this.removeError(elt)
-    var errors = this.options.object.errors(elt ? this.propertyNameFromElt(elt) : undefined)
+    var errors = this.options.model.errors(elt ? this.propertyNameFromElt(elt) : undefined)
     if (errors){
       for (prop in errors){
         this.appendError(this.eltFromPropertyName(prop), errors[prop])
@@ -49,8 +49,8 @@ $.Controller.extend('Itkin.Form',{
     this.updateObject()
   },
   ".cancel click": function(elt,e){
-    e.preventDefault()
-    this.options.object.restore(true)
+    e.preventDefault();
+    this.options.model.restore(true)
     this.element.trigger('cancel')
   }
 

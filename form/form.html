@@ -62,9 +62,9 @@
         }
       },{
       })
-      var object = new MyTest({multiAssoc:[]})
-      $('form').itkin_form({object: object}).bind('cancel', function(){
-        console.log($(this).controller().options.object)
+      var model = new MyTest({multiAssoc:[]})
+      $('form').itkin_form({model: model}).bind('cancel', function(){
+        console.log($(this).controller().options.model)
       })
     })
   </script>
