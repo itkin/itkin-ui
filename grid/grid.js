@@ -60,7 +60,6 @@ Itkin.List.extend('Itkin.Grid',
       canUnsort: this.options.canUnsort
     })
 
-    this.options.selectable && this.$.tbody.mxui_util_selectable();
     //this.scrollable.cache.thead.mxui_layout_resizer({selector: "th"});
     this.element.addClass("grid");
     if (this.options.filler) {

@@ -8,6 +8,7 @@ steal('mxui/nav/tabs').then(function($){
 			var selected = this.find(this.options.child_selector+"."+this.options.active)
 			selected = selected.length ? selected : this.find(this.options.child_selector+":first")
 			var self = this;
+
 			//make sure everything is deactivated ...
 			this.find(this.options.child_selector).each(function(){
 				var sub = self.sub($(this).addClass(self.options.button_class_names))
@@ -25,11 +26,11 @@ steal('mxui/nav/tabs').then(function($){
       $.each(this.options.types,function(){
         sub[this]();
       })
-
+      sub.data('tabsMenu', this.element)
       this.bind(sub, 'show', 'show')
       this.bind(sub, 'hide', 'hide')
 
-      return sub.addClass(this.options.tab_class_names);
+      return sub.addClass(this.options.tab_class_names).addClass('ui-closable-tabs-panel '+this.element.id+'-panel');
     },
     add: function(label, index, callback){
       if (typeof index == 'function'){
@@ -69,10 +70,12 @@ steal('mxui/nav/tabs').then(function($){
       this.element.trigger('add', [tab, panel])
     },
     show: function(elt, e){
-      elt.show()
+      if ($(e.target).data('tabsMenu') == this.element)
+        elt.show()
     },
     hide: function(elt, e){
-      elt.hide()
+      if ($(e.target).data('tabsMenu') == this.element)
+        elt.hide()
     },
     "{child_selector} span.ui-icon-close click": function(elt,e){
       var tab = elt.closest(this.options.child_selector)
@@ -82,7 +85,8 @@ steal('mxui/nav/tabs').then(function($){
       if(tab.hasClass(this.options.active))
         ( tab.prev().length ? tab.prev() : tab.next() ) . trigger('activate');
 
-      this.sub(tab).remove()
+      var sub = this.sub(tab)
+      sub.remove()
       tab.remove()
     }
 

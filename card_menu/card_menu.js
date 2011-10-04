@@ -9,7 +9,7 @@ steal('steal/less')
   Mxui.UI.Menu.extend("Itkin.UI.TopRightMenu", {
     defaults: {
       types: [
-        Mxui.Layout.Positionable("Mxui.UI.TopRight",{defaults: {my: "right top",at: "left top"}},{}),
+        Mxui.Layout.Positionable("Mxui.UI.TopRight",{defaults: {my: "right top",at: "left top", keep: true}},{}),
         Mxui.UI.Highlight
       ]
     }
@@ -54,7 +54,7 @@ steal('steal/less')
       var menu = this.element.children('ul')
 //        .width(buttonsetWidth  -5) // correction de 5px
         .itkin_ui_top_right_menu()
-        .mxui_layout_positionable({my: 'right top', at: 'right bottom', offset: "-3px 0", of:opener}) // correction de 3 px
+        .mxui_layout_positionable({my: 'right top', at: 'right bottom', offset: "-3px 0", of:opener, keep: true}) // correction de 3 px
 
       var elts = $.merge(uls,opener)
 

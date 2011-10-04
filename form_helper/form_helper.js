@@ -85,8 +85,6 @@ steal('jquery/class',
     }
 
 
-
-
     formHelperFn['collection_select']= function(model, property, collection, value, text, html_options){
       var choices = $.map(collection, function(item){
         return { value: item.attr(value), text: item.attr(text) }

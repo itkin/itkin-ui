@@ -46,7 +46,7 @@ $.Controller('Itkin.List',
 		filler: true,
 		// immediately uses the  model to request items for the grid
 		loadImmediate: true,
-		selectable : true ,
+		selectable : function(tbody){ tbody.mxui_util_selectable() } ,
     refresh: function(tbody, elt, newElt){
       elt.replaceWith(newElt)
       tbody.resize()
@@ -106,11 +106,19 @@ $.Controller('Itkin.List',
     this._super.apply(this,arguments)
 
   },
+  update: function(options){
+    if (options['params']){
+      this.options.params.attrs(options['params'])
+      delete options['params']
+    }
+    this._super(options)
+  },
   initTemplate: function(){
     this.element.append(this.view(this.options.initTemplate))
     this.$ = {}
     this.$.tbody = this.element.children('div:first')
     this.$.scrollBody = this.$.tbody.wrap("<div class='scrollBody' style=\"overflow-y: auto\"></div>").parent().mxui_layout_fill()
+
   },
   init: function(){
 
@@ -129,7 +137,7 @@ $.Controller('Itkin.List',
 		this.initTemplate()
 
 
-		this.options.selectable && this.element.mxui_util_selectable();
+    this.options.selectable && this.options.selectable.apply(this, [this.$.tbody]);
 		this.element.addClass('ui-corner-all')
 
 
@@ -204,28 +212,28 @@ $.Controller('Itkin.List',
 
   "new": function(instance){
     var tr = this._getRows('formTemplate', (instance || new this.options.model()))
-    this.options.prepend(this.$.tbody, tr )
+    this.options.prepend.apply(this,[this.$.tbody, tr ])
   },
 
   "{model} updated" : function(model, ev, item){
       var el = item.elements(this.element)
       if (el.length > 0){
         var newElt= this._getRows('rowTemplate', item)
-        this.options.refresh(this.$.tbody, el, newElt)
+        this.options.refresh.apply(this,[this.$.tbody, el, newElt])
       }
   },
   // override created handler to
   "{model} created" : function(model, ev, item){
     if (this.options.instanceBelongsToList.apply(this, [item])){
       var newEl = this._getRows('rowTemplate', item)
-      this.options.prepend(this.$.tbody, newEl)
+      this.options.prepend.apply(this,[this.$.tbody, newEl])
       this.options.params.attr('count', this.options.params.attr('count') +1)
     }
   },
   "{model} destroyed" : function(model, ev, item){
     if (this.options.instanceBelongsToList.apply(this, [item])){
       var el = item.elements(this.element)
-      this.options.remove(this.$.tbody, el)
+      this.options.remove.apply(this,[this.$.tbody, el])
       this.options.params.attr('count', this.options.params.attr('count') -1)
     }
   },
@@ -245,17 +253,17 @@ $.Controller('Itkin.List',
   ".{editClass} click": function(elt, e){
     var el = elt.closest('.'+this.options.rowClassName),
         form = this._getRows('formTemplate', el.model())
-    this.options.refresh(this.$.tbody, el, form)
+    this.options.refresh.apply(this,[this.$.tbody, el, form])
 
   },
   ".{cancelClass} click": function(elt, e){
     var el = elt.closest('.'+this.options.rowClassName)
 
     if (el.model().isNew()){
-      this.options.remove(this.$.tbody, el)
+      this.options.remove.apply(this,[this.$.tbody, el])
     } else {
       var newElt = this._getRows('rowTemplate', el.model())
-      this.options.refresh(this.$.tbody, el, newElt)
+      this.options.refresh.apply(this,[this.$.tbody, el, newElt])
     }
 
   },
@@ -279,10 +287,33 @@ $.Controller('Itkin.List',
     }
     // count is updated
     if (attr == 'updating' && val && val != old){
-      this.options.append(this.$.tbody, this.view(this.options.loadingTemplate,{rowClassName: this.options.rowClassName, count: this.options.nbColumns}))
+      this.options.append.apply(this,[this.$.tbody, this.view(this.options.loadingTemplate,{rowClassName: this.options.rowClassName, count: this.options.nbColumns})])
     } else if(attr == 'updating' && !val && val != old){
       this.$.tbody.find('.'+this.options.rowClassName+'.loading').remove()
     }
+  },
+
+  // helpers
+//  refresh: function(elt, newElt){
+//    this.options.refresh.apply(this, [this.$.tbody, elt, newElt])
+//  },
+//  prepend: function(newElt){
+//    this.options.prepend.apply(this,[this.$.tbody, newElt])
+//  },
+//  append: function(tbody, newElt){
+//    this.options.append.apply(this, [this.$.tbody, newElt])
+//  },
+//  remove: function(elt){
+//    this.options.remove.apply(this, [this.$.tbody, elt])
+//  },
+//  empty: function(tbody){
+//    this.options.empty.apply(this, [this.$.tbody])
+//  },
+  _closestRow: function(elt){
+    return elt.closest('.'+this.options.rowClassName)
+  },
+  model: function(){
+    return this.options.model
   }
 
 
