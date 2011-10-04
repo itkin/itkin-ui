@@ -9,11 +9,16 @@
             .error_text { color: red; font-size: 10px;}
             td {padding: 3px;}
             .slides{
-              border: 1px solid green
+              border: 1px solid green;
+              padding: 5px
             }
-            .slide {
+            .slide.selected {
               border: 1px solid blue
             }
+            .slide.activated {
+              border: 1px solid red
+            }
+
         </style>
 	</head>
 	<body>
@@ -47,6 +52,11 @@
           renderer: function(item){
             return $.String.underscore(item.attr("name")) +' '+ item.attr('value')
           }
+        }).bind('sliding', function(e, prev, next){
+            prev.hide()
+            next.show().resize()
+        }).bind('listed', function(e, newItems,list, trs){
+          trs.hide().mxui_layout_fill()
         });
 
 //        $('#slider').itkin_slider({

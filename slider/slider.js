@@ -6,6 +6,48 @@ steal('itkin/list',
   /**
    * @class Carla.Controllers.Applicants.Slider
    */
+  Mxui.Util.Selectable.extend('Itkin.SlidesSelectable',{
+    defaults:{
+      multiActivate: false
+    }
+  },{
+    // prevent deselect when mouse leave
+    "{selectOn} mouseleave": function(elt,e){
+
+    },
+    "{selectOn} select": function(elt,e){
+      this._activate(elt,e)
+    },
+    "{selectOn} mouseenter": function(el, ev){
+
+    },
+    "{selectOn} click":function(el, ev){
+
+    },
+    all: function(){
+      return this.element.children(this.options.selectOn)
+    },
+    prev: function(elt){
+      if (elt){
+        return elt.prev(this.options.selectOn)
+      } else if (this._getSelected().length){
+        return this._getSelected().prev(this.options.selectOn)
+      } else {
+        return $([])
+      }
+    },
+    next: function(elt){
+      if (elt){
+        return elt.next(this.options.selectOn)
+      } else if (this._getSelected().length){
+        return this._getSelected().next(this.options.selectOn)
+      } else {
+        return this.all().first()
+      }
+    }
+
+  })
+
   Itkin.List.extend('Itkin.Slider',{
   /* @Static */
     "defaults": {
@@ -17,9 +59,25 @@ steal('itkin/list',
       rowClassName: 'slide',
       selected: 0,
       loadImmediate: true,
-      buffer: 4
+      buffer: 4,
+      selectable : function(tbody){ tbody.itkin_slides_selectable() },
+      refresh: function(tbody, elt, newElt){
+        newElt.replaceAll(elt)
+        tbody.controller()._select(newElt)
+      },
+      remove: function(tbody, elt){
+        this.next(elt, function(){
+          elt.remove()
+        })
+      },
+      empty: function(tbody,elt){
+        tbody.controller()._selected = undefined
+        tbody.html('')
+      }
+
+
     },
-    listenTo: ['sliding','before.sliding', 'slid']
+    listenTo: ['slide', 'sliding']
   },
   {
     initTemplate: function(){
@@ -36,61 +94,48 @@ steal('itkin/list',
     list : function(clear, items){
       this._super.apply(this, arguments)
       if (clear){
-        this.options.selected = 0
-        this.slide(this.options.selected)
+        this.next()
       }
     },
-    next: function(){
-      this.slide(this.options.selected + 1)
+    next: function(callback){
+      this.slide(this.$.tbody.controller().next(), callback)
     },
-    prev: function(){
-      this.slide(this.options.selected - 1)
+    prev: function(callback){
+      this.slide(this.$.tbody.controller().prev(), callback)
     },
-    getSlide: function(index){
-      return this.$.tbody.children('.'+this.options.rowClassName).eq(index)
-    },
-    slide: function(target){
-      if (target != -1){
-        var self = this,
-            evtData = [this.getSlide(this.options.selected), this.getSlide(target)]
-        this.element.triggerAsync('before.sliding', target, function(){
-          self.element.triggerAsync("sliding", evtData , function(){
-            self.options.selected = target
-            self.element.trigger("slid", evtData )
-          })
+    slide: function(target, callback){
+      var self= this,
+          old = this.$.tbody.controller()._getSelected() || $([])
+      this.element.triggerAsync('slide',[target], function(){
+        self.element.triggerAsync('sliding', [old, target], function(){
+          self.$.tbody.controller()._select(target,false);
+          callback && callback(target)
         })
-      }
+      })
     },
-    " sliding": function(elt,e, prev,next){
-      prev.hide()
-      next.show().resize()
-    },
-   " before.sliding": function(elt,e, target){
-      if (target > this.options.params.offset + this.options.params.limit){
+   " slide": function(elt,e, target){
+      if (this.options.params.attr('updating') && target.index() == this.$.tbody.children('.'+this.options.rowClassName).length -1){
+        e.preventDefault()
+        this.element.trigger('loading')
+      } else if (target.length == 0){
         e.preventDefault()
       }
-      if (!this.options.params.attr('updating') && target < this.options.params.count && target + this.options.buffer >= this.options.params.offset + this.options.params.limit){
-        this.options.params.attr('offset', this.options.params.attr('offset') + this.options.params.attr('limit'))
-      }
     },
+
     ".prev click": function(elt,e){
-      e.preventDefault()
       this.prev()
     },
     ".next click": function(elt,e){
-      e.preventDefault()
       this.next()
     },
-    " listed" :function(elt,e, newItems,list, trs){
-      trs.hide().mxui_layout_fill()
+    " sliding": function(elt,e, old, target){
+      if (!this.options.params.attr('updating') &&
+          target.index() < this.options.params.count &&
+          target.index() + this.options.buffer >= this.options.params.offset + this.options.params.limit )
+      {
+        this.options.params.next() //attr('offset', this.options.params.attr('offset') + this.options.params.attr('limit'))
+      }
     }
-
-
-
-
-
-
-
 
   })
 
