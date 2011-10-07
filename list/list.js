@@ -180,14 +180,10 @@ $.Controller('Itkin.List',
   },
   _getRows: function(viewTemplateOption, items){
     items = ( $.isArray(items) || items instanceof $.Model.List ) ? items : [items]
-    return $(this.view(this.options.listTemplate,{
-      rowTemplate : this.options[viewTemplateOption],
+    return $(this.view(this.options.listTemplate, {
+      viewTemplate : this.options[viewTemplateOption],
       items: items
-    }, { columns: this.options.columns,
-         renderer: this.options.renderer,
-         rowClassName: this.options.rowClassName,
-         count: this.options.nbColumns
-    }));
+    }, this.options));
   },
 
   // adding some drawing function for listing, updating a row and prepending a new instance form
@@ -288,7 +284,7 @@ $.Controller('Itkin.List',
     }
     // count is updated
     if (attr == 'updating' && val && val != old){
-      this.options.append.apply(this,[this.$.tbody, this.view(this.options.loadingTemplate,{rowClassName: this.options.rowClassName, count: this.options.nbColumns})])
+      this.options.append.apply(this,[this.$.tbody, this.view(this.options.loadingTemplate,{rowClassName: this.options.rowClassName, nbColumns: this.options.nbColumns})])
     } else if(attr == 'updating' && !val && val != old){
       this.$.tbody.find('.'+this.options.rowClassName+'.loading').remove()
     }

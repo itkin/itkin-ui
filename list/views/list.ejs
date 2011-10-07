@@ -1,5 +1,5 @@
 <% for(var i =0; i < items.length; i++){ %>
   <div <%= items[i]%> tabindex='0' class="<%= rowClassName %>">
-  	<%== view(rowTemplate, items[i], {"renderer": renderer }) %>
+  	<%== view(viewTemplate, items[i], _extras ) %>
   </div>
 <% } %>
