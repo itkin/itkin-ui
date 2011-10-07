@@ -1,4 +1,4 @@
-steal('mxui/nav/tabs').then(function($){
+steal('mxui/nav/tabs', 'itkin/closable_tabs/closable_tabs.less').then(function($){
 
   Mxui.UI.Tabs('Itkin.ClosableTabs', {
 

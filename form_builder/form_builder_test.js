@@ -17,9 +17,4 @@ steal.plugins('funcunit').then(function(){
       ok(S("#content .field").exists(), "default builder wrapper is output")
       ok(S('#content .field.checkbox').exists(), "alternate test wrapper is output")
     })
-
-    test('form_for helper generate a form tag', function(){
-      S("#content form").exists()
-    })
-
 })

@@ -10,6 +10,9 @@
             .error_text { color: red; font-size: 10px;}
             td {padding: 3px;}
             li span.ui-icon-close{ float: left; margin: 0.4em 0.2em 0 0; cursor: pointer;}
+            #card_menu2 {
+              margin-top: 30px;
+            }
         </style>
 	</head>
 	<body>
@@ -30,12 +33,14 @@
           </li>
         </ul>
       </div>
+      <div id="card_menu2"><a href="#">Item 1 horiz</a></div>
       <script type='text/javascript'
                   src='../../steal/steal.js'>
           </script>
       <script type="text/javascript">
       steal('itkin/card_menu').then(function(){
         $('#card_menu').itkin_card_menu().show()
+        $('#card_menu2').itkin_card_menu()
       })
     </script>
 	</body>

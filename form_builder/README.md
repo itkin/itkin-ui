@@ -35,8 +35,8 @@ Basically given 3 models like that:
 
 You can build your form like this:
 
-    <% var f = getFormBuilder(model_instance) %>
     <form>
+      <% fields_for(modelInstance, function(f){ %>
       <%= f.text_field('title') %>
       <%= f.text_area('lead') %>
       <% fields_for('comments', function(c,index){ %>
@@ -54,7 +54,7 @@ It will create fields all the expected fields, setting the attributes and values
 
 FormBuilder allow to wrap each element into custom templates. Simply pass wrapper option to the helper method or when you instanciate the builder
 
-    <% var f = getFormBuilder(model_instance,{wrapper: '//myApp/views/wrapper.ejs'}) %>
+    <% var f = fields_for(model_instance,{wrapper: '//myApp/views/wrapper.ejs'}) %>
 
     <%= f.text_field('title',{wrapper: '//myApp/views/specific_wrapper.ejs'}) %>
 

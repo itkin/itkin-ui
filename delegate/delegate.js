@@ -27,7 +27,7 @@ steal('jquery/model').then(function(){
   // little helpers
   var isAttr = function(context, attr){
     var get = 'get' + $.String.classize(attr);
-    return context.Class.attributes.hasOwnProperty(attr) || context.Class.prototype.hasOwnProperty(get)
+    return context.Class.attributes.hasOwnProperty(attr) || typeof context[get] == 'function'
   }
 
 

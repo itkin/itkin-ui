@@ -6,7 +6,7 @@ steal('steal/less')
 .then(
   'jquery-ui/ui/jquery.ui.button.js')
 .then(function(){
-  Mxui.UI.Menu.extend("Itkin.UI.TopRightMenu", {
+  Mxui.UI.Menu.extend("Itkin.TopRightMenu", {
     defaults: {
       types: [
         Mxui.Layout.Positionable("Mxui.UI.TopRight",{defaults: {my: "right top",at: "left top", keep: true}},{}),
@@ -40,40 +40,53 @@ steal('steal/less')
   },{
     init: function(){
 
-      var uls = this.element.find('ul')
-      var opener = $('<button class="opener" type="button">options</button>').button({text: false, icons: {primary: 'ui-icon-cancel'}})
+      var trigger = $('<button class="card-menu-trigger" type="button">options</button>').button({text: false, icons: {primary: 'ui-icon-cancel'}})
+
+      var toolbar = this.element.children('a').wrapAll('<div class="toolbar"></div>').parent().append(trigger)
+        .buttonset()
 
       var buttonsetWidth = 0
-      this.element.children('a').wrapAll('<div class="toolbar"></div>').parent().append(opener)
-        .buttonset()
-        .children()
-        .each(function(){
-          buttonsetWidth += $(this).width()
-        })
+      toolbar.children().each(function(){
+        buttonsetWidth += $(this).width()
+      })
 
-      var menu = this.element.children('ul')
+      this.element.children('ul')
 //        .width(buttonsetWidth  -5) // correction de 5px
-        .itkin_ui_top_right_menu()
-        .mxui_layout_positionable({my: 'right top', at: 'right bottom', offset: "-3px 0", of:opener, keep: true}) // correction de 3 px
+        .itkin_top_right_menu()
+        .mxui_layout_positionable({my: 'right top', at: 'right bottom',  offset: '-3px 0', of: trigger, keep: true}) // correction de 3 px
 
-      var elts = $.merge(uls,opener)
+//      var elts = $.merge(uls,opener)
+//
+//      var self = this
+//
+//      this.bind(opener, 'mouseenter', function(){
+//        clearTimeout(self.timeout)
+//        menu.trigger('hide').trigger('show').trigger('move')
+//      })
+//      this.bind(elts, 'mouseleave', function(){
+//        self.timeout = setTimeout(function(){
+//          uls.trigger('hide')
+//        },300)
+//      })
+//
+//      this.bind(uls, 'mouseenter', function(){
+//        clearTimeout(self.timeout)
+//      })
 
+    },
+    ".card-menu-trigger mouseenter": function(elt,e){
+      clearTimeout(this.timeout)
+      //why these 3 events ?
+      this.element.children('ul').trigger('hide').trigger('show').trigger('move')
+    },
+    "ul, .card-menu-trigger mouseleave": function(elt,e){
       var self = this
-
-      this.bind(opener, 'mouseenter', function(){
-        clearTimeout(self.timeout)
-        menu.trigger('hide').trigger('show').trigger('move')
-      })
-      this.bind(elts, 'mouseleave', function(){
-        self.timeout = setTimeout(function(){
-          uls.trigger('hide')
-        },300)
-      })
-
-      this.bind(uls, 'mouseenter', function(){
-        clearTimeout(self.timeout)
-      })
-
+      this.timeout = setTimeout(function(){
+        self.element.find('ul').trigger('hide')
+      },300)
+    },
+    "ul mouseenter": function(elt,e){
+      clearTimeout(this.timeout)
     }
 
   })

@@ -121,8 +121,9 @@ $.Controller('Itkin.List',
 
   },
   init: function(){
-
-    this.element.mxui_layout_fill()
+    if (this.options.filler){
+      this.element.mxui_layout_fill()
+    }
 
 		for(var name in this.options.columns){
 			this.options.nbColumns++;
@@ -274,7 +275,7 @@ $.Controller('Itkin.List',
         && !this.options.params.updating
         && this.options.params.offset < this.options.params.count
       ){
-      this.options.params.attr('offset', this.options.params.offset + this.options.params.limit)
+      this.options.params.next() //attr('offset', this.options.params.offset + this.options.params.limit)
     }
   },
   //todo a nettoyer

@@ -43,7 +43,6 @@ Itkin.List.extend('Itkin.Grid',
 },
 /** @Prototype */
 {
-
   initTemplate: function(){
 
     this.element.append( this.view(this.options.initTemplate,{titleTemplate: this.options.titleTemplate, columns: this.options.columns }) )

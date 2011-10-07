@@ -9,17 +9,9 @@ steal(
     var underscore = $.String.underscore
 
     $.Class.extend('FormBuilder',{
-      form_for: function(modelInstance, options,callback){
-        if (!callback){
-          callback = options
-          options = {}
-        }
-        var f = this.getFormBuilder(modelInstance, options)
-        callback(f)
-        //return '<form>'+callback(f)+'</form>'
-      },
       fields_for: function(basename, model, options, proc){
         proc = arguments[arguments.length-1]
+        options = arguments[arguments.length-2]
         options = $.isPlainObject(options) ? options : {}
 
         if (typeof basename == 'string' && !(model instanceof $.Model) ){
@@ -33,15 +25,6 @@ steal(
         var f = new FormBuilder({model: model, viewContext: this, wrapper: options.wrapper, basename: basename})
         proc(f)
         return f
-      },
-      getFormBuilder: function(modelInstance, options){
-        options = options || {}
-        return new FormBuilder({
-          model: modelInstance,
-          viewContext: this,
-          wrapper: options.wrapper,
-          basename: options.basename
-        })
       }
     },{
       init: function(options){
@@ -110,6 +93,7 @@ steal(
           });
         }
 
+
         if (opts['wrapper'] && fn != 'hidden_field'){
           opts = $.extend({
             input: this.viewContext[fn].apply(this.viewContext, [this].concat(args)),
@@ -132,5 +116,5 @@ steal(
 
 
 
-    $.extend($.EJS.Helpers.prototype, {fields_for: FormBuilder.fields_for, form_for: FormBuilder.form_for, getFormBuilder: FormBuilder.getFormBuilder});
+    $.extend($.EJS.Helpers.prototype, {fields_for: FormBuilder.fields_for});
   });
