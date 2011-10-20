@@ -1,6 +1,7 @@
-steal('jquery/model', 'jquery/model/list').then(function(){
+steal('jquery/model', 'jquery/model/list', 'jquery/lang/json')
+  .then('jquery_store/jquery.store.js')
+  .then(function(){
 
-  (function($){
     $.Model.prototype.constructor.belongsToCached = function(name, type, foreignKey){
       this.attributes[foreignKey] = 'number';
       var cap = $.String.classize(name)
@@ -43,28 +44,39 @@ steal('jquery/model', 'jquery/model/list').then(function(){
       this[instance.attr(property)] = instance
     }
 
+    $.storage = new $.store();
 
     $.Model.prototype.constructor['cacheAll'] = function(options){
-      var options = options || {}
+      var options = options || {},
+          namespace = $.String.underscore(this.fullName) ,
+          def
 
-      if (!this.hasOwnProperty('listType')){
-        this.listType = $.Model.List
-      }
-      this.all = new this.listType([]);
       if (!this.hasOwnProperty('setAll')){
         this.setAll= function(instances){
           //todo call an empty funct
           this.all.push(instances)
         }
       }
-      if(options.cacheAllConstantsBy){
-        this.findAll({}, this.callback(['setAll', function(){ return options.cacheAllConstantsBy }, 'cacheConstants']))
+
+      this.all = new this.List([]);
+
+      if ($.storage.get(namespace+'.all')){
+        def = $.Deferred()
+        def.resolve(this.models($.evalJSON($.storage.get(namespace+'.all'))))
       } else {
-        this.findAll({}, this.callback('setAll'))
+        def = this.findAll({})
+        def.then(function(items){
+          $.storage.set(namespace+'.all', $.toJSON(items.serialize()))
+        })
+      }
+      def.then(this.callback('setAll'))
+
+      if(options.cacheAllConstantsBy){
+        def.pipe(this.callback('cacheConstants', options.cacheAllConstantsBy))
       }
 
     }
 
-  })(jQuery)
+
 
 })
