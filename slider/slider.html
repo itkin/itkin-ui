@@ -7,16 +7,28 @@
             body {font-family: verdana}
             .error {border: solid 1px red;}
             .error_text { color: red; font-size: 10px;}
-            td {padding: 3px;}
-            .slides{
+            .slides-wrapper{
+              position: relative;
+              overflow: hidden;
               border: 1px solid green;
-              padding: 5px
+
+            }
+            .slides{
+              position: relative;
+              height: 100%;
+              width: 50000px;
+            }
+            .slide{
+              margin: 5px;
+              float: left;
+              background: grey;
+
             }
             .slide.selected {
               border: 1px solid blue
             }
             .slide.activated {
-              border: 1px solid red
+              border: 1px solid red;
             }
 
         </style>
@@ -28,7 +40,7 @@
       </div>
 	<script type='text/javascript' src='../../steal/steal.js?'></script>
   <script type="text/javascript">
-    steal('itkin/slider', 'jquery/dom/fixture').then(function(){
+    steal('itkin/slider', 'jquery/dom/fixture', 'jquery-ui/ui/jquery.ui.core.js').then(function(){
         $.Model('MyTest', {
           attributes:{
             name: 'string',
@@ -53,30 +65,15 @@
             return $.String.underscore(item.attr("name")) +' '+ item.attr('value')
           }
         }).bind('sliding', function(e, prev, next){
-            prev.hide()
-            next.show().resize()
+          var index = next.index(),
+            wrapper = $(this).find('.slides-wrapper'),
+            wrapperWidth = wrapper.width(),
+            marginLeft =  wrapperWidth * index
+          wrapper.children('.slides').animate({marginLeft: "-" + marginLeft}, 1000, 'easeInOutQuart')
         }).bind('listed', function(e, newItems,list, trs){
-          trs.hide().mxui_layout_fill()
+          var wrapper = $(this).find('.slides-wrapper')
+          trs.outerWidth(wrapper.width(), true).mxui_layout_fill()
         });
-
-//        $('#slider').itkin_slider({
-//          model: MyTest,
-//         // type: MyTest.SlideController,
-//          params: new Mxui.Data({limit: 10, buffer: 4 })
-//        }).bind('sliding', function(e, current, next){
-//            if (next.length){
-//              current.hide()
-//              next.show()
-//            } else {
-//              e.preventDefault()
-//            }
-//       })
-// .bind("default.sliding", function(elt, e, current, next ){
-//          if (next && next.length != 0)
-//            this.options.selected = next.index()
-//              //else {}
-//           // e.preventDefault()
-//          });
       })
   </script>
 	</body>

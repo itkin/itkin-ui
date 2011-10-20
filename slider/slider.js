@@ -78,7 +78,9 @@ steal('itkin/list',
     initTemplate: function(){
       this.element.append(this.view(this.options.initTemplate))
       this.$ = {}
-      this.$.tbody = $('div.slides', this.element).mxui_layout_fill()
+      this.$.tbody = $('div.slides', this.element)
+      this.$.wrapper = this.$.tbody.parent().mxui_layout_fill()
+      this.$.filter = this.element.children('.slider-filter')
     },
 
     /**
@@ -116,7 +118,6 @@ steal('itkin/list',
         e.preventDefault()
       }
     },
-
     ".prev click": function(elt,e){
       this.prev()
     },
@@ -130,7 +131,19 @@ steal('itkin/list',
       {
         this.options.params.next() //attr('offset', this.options.params.attr('offset') + this.options.params.attr('limit'))
       }
+    },
+    "{params} updated.attr": function(params, e, attr, val, old){
+      this._super.apply(this,arguments)
+      if (attr == 'count'){
+        var text = this.find(".slider-buttons .counter").text()
+        this.find(".slider-buttons .counter").text(text.replace(/\/.*/,'/'+val))
+      }
+    },
+    ".slide activate": function(elt,e){
+      var text = this.find(".slider-buttons .counter").text()
+      this.find(".slider-buttons .counter").text(text.replace(/.*\//, (elt.index()+1) +'/'))
     }
+
 
   })
 
