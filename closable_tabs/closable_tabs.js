@@ -1,4 +1,4 @@
-steal('mxui/nav/tabs', 'itkin/closable_tabs/closable_tabs.less').then(function($){
+steal('steal/less').then('mxui/nav/tabs', 'itkin/closable_tabs/closable_tabs.less').then(function($){
 
   Mxui.UI.Tabs('Itkin.ClosableTabs', {
 
@@ -32,14 +32,14 @@ steal('mxui/nav/tabs', 'itkin/closable_tabs/closable_tabs.less').then(function($
 
       return sub.addClass(this.options.tab_class_names).addClass('ui-closable-tabs-panel '+this.element.id+'-panel');
     },
-    add: function(label, index, callback){
+    add: function(label, index, callback, panel){
       if (typeof index == 'function'){
         callback = index
         index = null
       }
       var tab = $('<li><a><span>'+(label || "&nbsp;")+'</span></a><span class="ui-icon ui-icon-close"></span></li>').addClass(this.options.button_class_names),
 
-          panel = this._initSub($('<div></div>').hide()),
+          panel = this._initSub($(panel || '<div></div>').hide()),
 
           targetTab, insert ;
 
