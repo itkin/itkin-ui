@@ -129,12 +129,6 @@ $.Controller('Itkin.List',
 			this.options.nbColumns++;
 		}
 
-//    //create the scrollable table
-//		var count = 0;
-//		for(var name in this.options.columns){
-//			count++;
-//		}
-
 		this.initTemplate()
 
 
@@ -151,7 +145,7 @@ $.Controller('Itkin.List',
       this.list(true,this.options.list)
     }
 
-    // bind scroll on scrollbody (delegation doesn t work)
+    // bind scroll on scrollbody for list and grid (delegation doesn t work)
     if (this.options.offsetEmpties == false && this.$.scrollBody){
       this.bind(this.$.scrollBody, 'scroll', 'scroll')
     }
@@ -175,8 +169,17 @@ $.Controller('Itkin.List',
 		}
 	  this.makeRequest(clear)
 	},
+
   makeRequest: function(clear){
-    this.options.model.findAll(this.options.params.attrs(), this.callback('list', clear))
+    var self = this;
+    this.options.model.findAll(this.options.params.attrs(), function(items){
+      if (clear){
+        self.options.list = items
+      } else {
+        self.options.list.push(items)
+      }
+      self.list(clear, items)
+    })
   },
   _getRows: function(viewTemplateOption, items){
     items = ( $.isArray(items) || items instanceof $.Model.List ) ? items : [items]
@@ -203,7 +206,6 @@ $.Controller('Itkin.List',
 		this.options.params.attr('count',items.count)
 
     // added by me
-    this.options.list.push(items)
     this.element.trigger('listed', [items, this.options.list, trs])
   },
 
@@ -213,12 +215,13 @@ $.Controller('Itkin.List',
   },
 
   "{model} updated" : function(model, ev, item){
-      var el = item.elements(this.element)
-      if (el.length > 0){
-        var newElt= this._getRows('rowTemplate', item)
-        this.options.refresh.apply(this,[this.$.tbody, el, newElt])
-      }
+    var el = item.elements(this.element)
+    if (el.length > 0){
+      var newElt= this._getRows('rowTemplate', item)
+      this.options.refresh.apply(this,[this.$.tbody, el, newElt])
+    }
   },
+
   // override created handler to
   "{model} created" : function(model, ev, item){
     if (this.options.instanceBelongsToList.apply(this, [item])){
@@ -227,6 +230,7 @@ $.Controller('Itkin.List',
       this.options.params.attr('count', this.options.params.attr('count') +1)
     }
   },
+
   "{model} destroyed" : function(model, ev, item){
     if (this.options.instanceBelongsToList.apply(this, [item])){
       var el = item.elements(this.element)
@@ -238,22 +242,27 @@ $.Controller('Itkin.List',
   // some events stuff
   "form submit": function(elt,e){
     e.preventDefault()
+    e.stopPropagation()
     var tr = elt.closest('.'+this.options.rowClassName)
     tr.model().update(elt.formParams()[$.String.camelize(tr.model().Class.shortName)], function(){
       tr.remove()
     })
   },
+
   ".{deleteClass} click": function(elt, e){
+      e.stopPropagation()
       elt.closest('.'+this.options.rowClassName).model().destroy()
   },
 
   ".{editClass} click": function(elt, e){
+    e.stopPropagation()
     var el = elt.closest('.'+this.options.rowClassName),
         form = this._getRows('formTemplate', el.model())
     this.options.refresh.apply(this,[this.$.tbody, el, form])
 
   },
   ".{cancelClass} click": function(elt, e){
+    e.stopPropagation()
     var el = elt.closest('.'+this.options.rowClassName)
 
     if (el.model().isNew()){

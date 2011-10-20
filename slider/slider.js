@@ -45,28 +45,23 @@ steal('itkin/list',
         return this.all().first()
       }
     }
-
   })
 
   Itkin.List.extend('Itkin.Slider',{
   /* @Static */
     "defaults": {
       initTemplate: '//itkin/slider/views/init.ejs',
-//      rowTemplate: '//itkin/slider/views/row.ejs',
-//      formTemplate: '//itkin/slider/views/form.ejs',
-//      loadingTemplate: '//itkin/slider/views/loading',
-//      listTemplate: '//itkin/slider/views/list',
       rowClassName: 'slide',
       selected: 0,
       loadImmediate: true,
       buffer: 4,
-      selectable : function(tbody){ tbody.itkin_slides_selectable() },
+      selectable : function(tbody){ tbody.itkin_slides_selectable({selectOn: "[tabindex].slide"}) },
       refresh: function(tbody, elt, newElt){
         newElt.replaceAll(elt)
         tbody.controller()._select(newElt)
       },
       remove: function(tbody, elt){
-        this.next(elt, function(){
+        this.next(function(){
           elt.remove()
         })
       },
