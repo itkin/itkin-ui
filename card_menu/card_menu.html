@@ -10,37 +10,65 @@
             .error_text { color: red; font-size: 10px;}
             td {padding: 3px;}
             li span.ui-icon-close{ float: left; margin: 0.4em 0.2em 0 0; cursor: pointer;}
-            #card_menu2 {
+            #card_menu2, #menu {
               margin-top: 30px;
+            }
+
+          	.ui-menu {
+              margin: 0px;
+              padding: 0px;
+              list-style-image:none;
+              list-style-position:outside;
+              list-style-type:none;
+            }
+            .ui-menu .ui-menu-item {
+              padding:0.5em 1em;
+              cursor: pointer;
+              width: inherit
             }
         </style>
 	</head>
 	<body>
 	    <h1>Card Menu</h1>
-      <div id="card_menu">
-        <a href="#">Item 1 horiz</a>
-        <a href="#">Item 2 horiz</a>
-        <a href="#">Item 3 horiz</a>
-        <ul>
-          <li><a href="#">Item 4 vert</a></li>
-          <li><a href="#">Item 5 vert</a></li>
-          <li>
-            <a href="#">Item 6 vert</a>
-            <ul>
-              <li><a href="#">Item 6.1</a></li>
-              <li><a href="#">Item 6.2</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <div id="card_menu2"><a href="#">Item 1 horiz</a></div>
-      <script type='text/javascript'
-                  src='../../steal/steal.js'>
-          </script>
+      <!--<div id="card_menu">-->
+        <!--<a href="#">A 1 horiz</a>-->
+        <!--<a href="#">A 2 horiz</a>-->
+        <!--<a href="#">A 3 horiz</a>-->
+        <!--<ul>-->
+          <!--<li><a href="#">B 1 vert</a></li>-->
+          <!--<li><a href="#">B 2 vert</a></li>-->
+          <!--<li>-->
+            <!--<a href="#">B 3 vert</a>-->
+            <!--<ul>-->
+              <!--<li><a href="#">B 3 1 </a></li>-->
+              <!--<li><a href="#">B 3 2 </a></li>-->
+            <!--</ul>-->
+          <!--</li>-->
+        <!--</ul>-->
+      <!--</div>-->
+      <!--<div id="card_menu2"><a href="#">Item 1 horiz</a></div>-->
+      <ul id="menu">
+        <li>A
+          <ul>
+            <li>A1</li>
+            <li>A2
+              <ul>
+                <li>A21</li>
+                <li>A22</li>
+                <li>A23</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>B</li>
+      </ul>
+
+      <script type='text/javascript'  src='../../steal/steal.js'> </script>
       <script type="text/javascript">
       steal('itkin/card_menu').then(function(){
-        $('#card_menu').itkin_card_menu().show()
-        $('#card_menu2').itkin_card_menu()
+//        $('#card_menu').itkin_card_menu().show()
+//        $('#card_menu2').itkin_card_menu()
+        $('#menu').itkin_menu().trigger('show')
       })
     </script>
 	</body>

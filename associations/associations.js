@@ -5,7 +5,7 @@ steal('jquery/model', 'jquery/model/list').then(function(){
     this.attributes[name] = type +'.model'
     // prevent the assoc to be sent back
     if (this.hasOwnProperty('backendSerialize')){
-      this.backendSerialize[name] = false
+      this.params[name] = false
     }
     this.attributes[foreignKey]= 'number'
 

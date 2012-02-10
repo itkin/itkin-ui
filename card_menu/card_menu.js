@@ -6,12 +6,32 @@ steal('steal/less')
 .then(
   'jquery-ui/ui/jquery.ui.button.js')
 .then(function(){
+
+  Mxui.UI.Menu.extend("Itkin.menu", {},
+  {
+  "mouseleave": function(el,e){
+    if(this.options.level == 0){
+      this.element.children('.'+this.options.select).trigger('deactivate')
+    }
+  },
+  ">show" : function(el, ev){
+     if(ev.target == this.element[0]){
+      this.element.show();
+      // prevent the event to trigger the positionable "show" handler
+      ev.stopPropagation()
+      this.element.children('.'+this.options.active+":first").trigger('deactivate')
+     }
+  }
+
+  })
+
   Mxui.UI.Menu.extend("Itkin.TopRightMenu", {
     defaults: {
       types: [
         Mxui.Layout.Positionable("Mxui.UI.TopRight",{defaults: {my: "right top",at: "left top", keep: true}},{}),
         Mxui.UI.Highlight
-      ]
+      ],
+      active : "ui-state-active"
     }
 
   },{
@@ -19,75 +39,52 @@ steal('steal/less')
       this._super.apply(this, arguments)
       this.element.children(this.options.child_selector+':first').addClass('ui-corner-top')
       this.element.children(this.options.child_selector+':last').addClass('ui-corner-bottom')
-    },
-    "hide" : function(el, ev){
-      var self = this;
-      if (el.context == this.element.context){
-        ev.pause();
-        this.element.find("."+this.options.active).triggerAsync("deactivate", function(){
-          self.element.find("."+self.options.select).triggerAsync("deselect", function(){
-            ev.resume();
-          })
-        });
-      }
     }
-
-
   })
 
   $.Controller('Itkin.CardMenu',{
 
   },{
     init: function(){
-
+      // genere le bouton de trigger
       var trigger = $('<button class="card-menu-trigger" type="button">options</button>').button({text: false, icons: {primary: 'ui-icon-cancel'}})
 
-      var toolbar = this.element.children('a').wrapAll('<div class="toolbar"></div>').parent().append(trigger)
+      // genere une toolbar avec les liens
+      var toolbar = this.element.children('a').wrapAll('<div class="itkin-card-menu-toolbar"></div>').parent().append(trigger)
         .buttonset()
 
+      // calcule la largeur des éléments contenus dans la toolbar
       var buttonsetWidth = 0
       toolbar.children().each(function(){
         buttonsetWidth += $(this).width()
       })
 
+      // instancie un menu itkin et le positionne sous le trigger
       this.element.children('ul')
-//        .width(buttonsetWidth  -5) // correction de 5px
         .itkin_top_right_menu()
         .mxui_layout_positionable({my: 'right top', at: 'right bottom',  offset: '-3px 0', of: trigger, keep: true}) // correction de 3 px
 
-//      var elts = $.merge(uls,opener)
-//
-//      var self = this
-//
-//      this.bind(opener, 'mouseenter', function(){
-//        clearTimeout(self.timeout)
-//        menu.trigger('hide').trigger('show').trigger('move')
-//      })
-//      this.bind(elts, 'mouseleave', function(){
-//        self.timeout = setTimeout(function(){
-//          uls.trigger('hide')
-//        },300)
-//      })
-//
-//      this.bind(uls, 'mouseenter', function(){
-//        clearTimeout(self.timeout)
-//      })
-
     },
     ".card-menu-trigger mouseenter": function(elt,e){
-      clearTimeout(this.timeout)
+//      clearTimeout(this.timeout)
       //why these 3 events ?
-      this.element.children('ul').trigger('hide').trigger('show').trigger('move')
+      this.element.children('ul').trigger('show')
     },
-    "ul, .card-menu-trigger mouseleave": function(elt,e){
-      var self = this
-      this.timeout = setTimeout(function(){
-        self.element.find('ul').trigger('hide')
-      },300)
-    },
-    "ul mouseenter": function(elt,e){
-      clearTimeout(this.timeout)
+    "show": function(elt,e){
+      elt.trigger('move')
     }
+//    "ul, .card-menu-trigger mouseleave": function(elt,e){
+//      var self = this
+//      this.timeout = setTimeout(function(){
+//        self.element.find('ul').trigger('hide')
+//      },300)
+//    },
+//    "ul mouseenter": function(elt,e){
+//      clearTimeout(this.timeout)
+//    }
 
   })
+
+
+
 })

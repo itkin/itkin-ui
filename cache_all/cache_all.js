@@ -1,4 +1,4 @@
-steal('jquery/model', 'jquery/model/list', 'jquery/lang/json')
+steal('jquery/model', 'jquery/model/list/local')
   .then('jquery_store/jquery.store.js')
   .then(function(){
 
@@ -36,7 +36,7 @@ steal('jquery/model', 'jquery/model/list', 'jquery/lang/json')
     // Action.forecasted -> new Action({name: 'forecasted'})
     $.Model.prototype.constructor.cacheConstants = function(property){
       var self = this;
-      this.all.each(function(i,instance){
+      return this.all.each(function(i,instance){
         self.cacheConstant(property, instance)
       })
     }
@@ -44,36 +44,43 @@ steal('jquery/model', 'jquery/model/list', 'jquery/lang/json')
       this[instance.attr(property)] = instance
     }
 
-    $.storage = new $.store();
+    //$.storage = new $.store();
 
     $.Model.prototype.constructor['cacheAll'] = function(options){
-      var options = options || {},
-          namespace = $.String.underscore(this.fullName) ,
+      var self = this,
+          options = options || {},
+          namespace = $.String.underscore(this.fullName) +'.all',
           def
 
-      if (!this.hasOwnProperty('setAll')){
-        this.setAll= function(instances){
-          //todo call an empty funct
-          this.all.push(instances)
-        }
-      }
 
-      this.all = new this.List([]);
+//      if (!this.hasOwnProperty('setAll')){
+//        this.setAll= function(instances){
+//          //todo call an empty funct
+//          this.all.push(instances)
+//        }
+//      }
 
-      if ($.storage.get(namespace+'.all')){
+
+
+      this.all = new this.List.Local([]);
+
+      if (window.localStorage[namespace]){
         def = $.Deferred()
-        def.resolve(this.models($.evalJSON($.storage.get(namespace+'.all'))))
+        def.resolve(this.all.retrieve(namespace))
       } else {
         def = this.findAll({})
         def.then(function(items){
-          $.storage.set(namespace+'.all', $.toJSON(items.serialize()))
+          self.all.push(items)
+          self.all.store(namespace)
+          //$.storage.set(namespace+'.all', $.toJSON(items.serialize()))
         })
       }
-      def.then(this.callback('setAll'))
+      //def.then(this.callback('setAll'))
 
       if(options.cacheAllConstantsBy){
         def.pipe(this.callback('cacheConstants', options.cacheAllConstantsBy))
       }
+      return def
 
     }
 

@@ -23,7 +23,10 @@ steal(
         }
 
         var f = new FormBuilder({model: model, viewContext: this, wrapper: options.wrapper, basename: basename})
-        proc(f)
+
+        if(typeof(proc) == 'function')
+          proc(f)
+
         return f
       }
     },{

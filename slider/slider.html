@@ -22,7 +22,7 @@
               margin: 5px;
               float: left;
               background: grey;
-
+              border: 1px solid black;
             }
             .slide.selected {
               border: 1px solid blue
@@ -38,9 +38,9 @@
       <div id='slider'>
 
       </div>
-	<script type='text/javascript' src='../../steal/steal.js?'></script>
+	<script type='text/javascript' src='../../steal/steal.js'></script>
   <script type="text/javascript">
-    steal('itkin/slider', 'jquery/dom/fixture', 'jquery-ui/ui/jquery.ui.core.js').then(function(){
+    steal('itkin/slider', 'jquery/dom/fixture').then(function($){
         $.Model('MyTest', {
           attributes:{
             name: 'string',
@@ -62,18 +62,28 @@
             return item.value !== ''
           },
           renderer: function(item){
-            return $.String.underscore(item.attr("name")) +' '+ item.attr('value')
+            return $.String.underscore(item.attr("name")) +' '+ (parseInt(item.attr('value')) + 1)
           }
-        }).bind('sliding', function(e, prev, next){
-          var index = next.index(),
-            wrapper = $(this).find('.slides-wrapper'),
-            wrapperWidth = wrapper.width(),
-            marginLeft =  wrapperWidth * index
-          wrapper.children('.slides').animate({marginLeft: "-" + marginLeft}, 1000, 'easeInOutQuart')
-        }).bind('listed', function(e, newItems,list, trs){
-          var wrapper = $(this).find('.slides-wrapper')
-          trs.outerWidth(wrapper.width(), true).mxui_layout_fill()
-        });
+        })
+//          .bind('sliding', function(e, prev, next){
+//          var index = next.index(),
+//            wrapper = $(this).find('.slides-wrapper'),
+//            wrapperWidth = wrapper.width(),
+//            marginLeft =  wrapperWidth * index
+//          wrapper.children('.slides').animate({marginLeft: "-" + marginLeft}, 1000, 'easeInOutQuart')
+//        })
+//          .bind('activate', function(e){
+//            var $elt = $(this),
+//                $wrapper = $elt.closest('.slides-wrapper')
+//
+//            $elt.outerWidth($wrapper.width,true)
+//
+//
+//          })
+          .bind('listed', function(e, newItems,list, trs){
+            var wrapper = $(this).find('.slides-wrapper')
+            trs.outerWidth(wrapper.width(), true).mxui_layout_fill()
+        })
       })
   </script>
 	</body>

@@ -6,59 +6,101 @@ steal('itkin/list',
   /**
    * @class Carla.Controllers.Applicants.Slider
    */
-  Mxui.Util.Selectable.extend('Itkin.SlidesSelectable',{
+  Mxui.Nav.Selectable.extend('Itkin.SlidesSelectable',{
     defaults:{
-      multiActivate: false
-    }
+      multiActivate: false,
+      outsideDeactivate: false
+    },
+    listenTo: ['slide']
   },{
-    // prevent deselect when mouse leave
-    "{selectOn} mouseleave": function(elt,e){
 
-    },
-    "{selectOn} select": function(elt,e){
-      this._activate(elt,e)
-    },
-    "{selectOn} mouseenter": function(el, ev){
-
-    },
+    // on empeche l'activation sur click d'un slide
     "{selectOn} click":function(el, ev){
 
     },
-    all: function(){
-      return this.element.children(this.options.selectOn)
-    },
-    prev: function(elt){
-      if (elt){
-        return elt.prev(this.options.selectOn)
-      } else if (this._getSelected().length){
-        return this._getSelected().prev(this.options.selectOn)
-      } else {
-        return $([])
+    "mouseenter": function(){ },
+    "mouseleave": function(){ },
+    "{selectOn} mouseenter": function(){ },
+    "{selectOn} mouseleave": function(){ },
+    "{selectOn} focusin": function(){ },
+    "{selectOn} focusout": function(){ },
+
+    "{selectOn} keydown": function(el, ev){
+      // we are keying, this means we dont
+      // accept mouse select events w/o a move
+
+      // set keying for a brief time.
+      // this is to support when keying scrolls.
+      var key = ev.key()
+      if(/right|left/.test(key)){
+        this.slideTo(key)
+//        var nextEl = this.moveTo(el, key);
+//        this.selected(nextEl, true);
+        ev.preventDefault();
+        this.keying = true;
+        setTimeout(this.proxy(function(){
+          this.keying = false;
+        }),100)
       }
     },
-    next: function(elt){
-      if (elt){
-        return elt.next(this.options.selectOn)
-      } else if (this._getSelected().length){
-        return this._getSelected().next(this.options.selectOn)
+
+    // quand on sélectionne on active en meme temps
+    "{selectOn} select": function(elt,e){
+      this._super.apply(this, arguments)
+      if (!this.lastSelected || elt[0] != this.lastSelected[0])
+        this.activated(elt,e)
+    },
+    _getActivated: function(){
+      return this.selectable().filter("." + this.options.activatedClassName)
+    },
+    // avant d'activer on trigger l'evt "slide", handlé au niveau du slider (todo a gérer ici )
+    activated : function(el, ev){
+      var self = this;
+      if (arguments.length == 0){
+        return this._getActivated()
+      } else{
+        self.element.triggerAsync('slide',[this.lastSelected, el], function(){
+          self.element.triggerAsync('animate', [self.lastSelected, el], function(){
+            self._getActivated().trigger('deactivate');
+            el.trigger("activate", el.models ? [el.models()] : [el])
+          })
+        }, function(){
+          alert("io")
+        })
+      }
+    },
+    ' slide': function(elt,e, lastSelected, target){
+      // si on passe de 1 à -1
+      if (lastSelected && lastSelected.index() == 0 && this.selectable().last()[0] == target[0]){
+        e.preventDefault()
+        // si on passe du dernier au premier
+      } else if(lastSelected && this.selectable().length - 1 ==  lastSelected.index() && target.index() == 0 ){
+        e.preventDefault()
+      }
+    },
+    // Selectionne le premier slide ou celui de droite / gauche
+    slideTo: function(dir){ // right / left
+      if (!this.lastSelected){
+        return this.selected(this.selectable().first())
       } else {
-        return this.all().first()
+        return this.selected(this.moveTo(this.lastSelected, dir))
       }
     }
-  })
+  }) ;
 
   Itkin.List.extend('Itkin.Slider',{
   /* @Static */
     "defaults": {
       initTemplate: '//itkin/slider/views/init.ejs',
       rowClassName: 'slide',
+      slidingDuration: 800,
       selected: 0,
       loadImmediate: true,
       buffer: 4,
       selectable : function(tbody){ tbody.itkin_slides_selectable({selectOn: "[tabindex].slide"}) },
       refresh: function(tbody, elt, newElt){
         newElt.replaceAll(elt)
-        tbody.controller()._select(newElt)
+        tbody.controller().selected(newElt, true)
       },
       remove: function(tbody, elt){
         this.next(function(){
@@ -71,8 +113,8 @@ steal('itkin/list',
       }
 
 
-    },
-    listenTo: ['slide', 'sliding']
+    }//,
+    //listenTo: ['slide', 'sliding']
   },
   {
     initTemplate: function(){
@@ -95,36 +137,24 @@ steal('itkin/list',
       }
     },
     next: function(callback){
-      this.slide(this.$.tbody.controller().next(), callback)
+      this.$.tbody.controller().slideTo('right')
     },
     prev: function(callback){
-      this.slide(this.$.tbody.controller().prev(), callback)
+      this.$.tbody.controller().slideTo('left')
     },
-    slide: function(target, callback){
-      var self= this,
-          old = this.$.tbody.controller()._getSelected() || $([])
-      this.element.triggerAsync('slide',[target], function(){
-        self.element.triggerAsync('sliding', [old, target], function(){
-          self.$.tbody.controller()._select(target,false);
-          callback && callback(target)
-        })
+
+    ".slides-wrapper animate": function(wrapper, e, lastSelected, target){
+      var index = target.index(),
+           wrapperWidth = wrapper.width(),
+           marginLeft =  wrapperWidth * index ;
+      e.pause();
+      wrapper.children('.slides').animate({marginLeft: "-" + marginLeft}, this.options.slidingDuration, 'easeInOutQuart', function(){
+        e.resume();
       })
     },
-   " slide": function(elt,e, target){
-      if (this.options.params.attr('updating') && target.index() == this.$.tbody.children('.'+this.options.rowClassName).length -1){
-        e.preventDefault()
-        this.element.trigger('loading')
-      } else if (target.length == 0){
-        e.preventDefault()
-      }
-    },
-    ".prev click": function(elt,e){
-      this.prev()
-    },
-    ".next click": function(elt,e){
-      this.next()
-    },
-    " sliding": function(elt,e, old, target){
+
+    " .slides slide": function(elt,e, lastSelected, target){
+      // si on n'update pas déja et que ce qui reste a afficher est inférieur au buffer, on lance un update ..
       if (!this.options.params.attr('updating') &&
           target.index() < this.options.params.count &&
           target.index() + this.options.buffer >= this.options.params.offset + this.options.params.limit )
@@ -132,16 +162,36 @@ steal('itkin/list',
         this.options.params.next() //attr('offset', this.options.params.attr('offset') + this.options.params.attr('limit'))
       }
     },
+    // a bien etre sur de passer en second !! apres  " .slides slide"
+    ".slides slide": function(elt,e, lastSelected, target){
+      // si on est en train d'updater et que l'index est égal au dernier item, on prévient que l'on loade
+      if (this.options.params.attr('updating') && target.index() == this.$.tbody.children('.'+this.options.rowClassName).length -1 ){
+        e.preventDefault()
+        this.element.trigger('loading')
+      // si pas de target on stope l'action
+      } else if (target.length == 0){
+        e.preventDefault()
+      }
+    },
+    ".slide activate": function(elt,e){
+      var text = this.find(".slider-buttons .counter").text(),
+          index = elt.index() + 1 ;
+      this.find(".slider-buttons .counter").text(text.replace(/.*\//, index +'/'))
+    },
+    ".prev click": function(elt,e){
+      e.preventDefault()
+      this.prev()
+    },
+    ".next click": function(elt,e){
+      e.preventDefault()
+      this.next()
+    },
     "{params} updated.attr": function(params, e, attr, val, old){
       this._super.apply(this,arguments)
       if (attr == 'count'){
         var text = this.find(".slider-buttons .counter").text()
         this.find(".slider-buttons .counter").text(text.replace(/\/.*/,'/'+val))
       }
-    },
-    ".slide activate": function(elt,e){
-      var text = this.find(".slider-buttons .counter").text()
-      this.find(".slider-buttons .counter").text(text.replace(/.*\//, (elt.index()+1) +'/'))
     }
 
 

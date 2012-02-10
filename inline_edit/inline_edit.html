@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+		<title>Itkin.inlineEdit</title>
+        <style type='text/css'>
+            body {font-family: verdana}
+            .error {border: solid 1px red;}
+            .error_text { color: red; font-size: 10px;}
+            td {padding: 3px;}
+        </style>
+	</head>
+	<body>
+	  <h1>Itkin.inlineEdit Demo</h1>
+		<div id='card'></div>
+		<script type='text/javascript' src='../../steal/steal.js'></script>
+		<script type='text/javascript'>
+			steal('carla', 'itkin/inline_edit',function(){
+        Carla.Models.Applicant.findAll({},function(applicants){
+          applicant = applicants[0]
+          $('#card').carla_applicant_card({model:applicant}).itkin_inline_edit({
+            triggerLink: '.jobs',
+            targetSelector:'.jobs',
+            cardSelector: '.carla_applicant_card',
+            onEdit: function(wrapper, model, options){
+              wrapper.carla_jobs_form({
+                list: applicant.attr('jobs'),
+                basename: "applicant[jobs]"
+              }).itkin_form({
+                model: applicant,
+                basename: "applicant"
+              })
+            },
+            onSubmit: function(elt,e){
+              elt.controller(Itkin.Form).options.model.save()
+            }
+          })
+        })
+			})
+		</script>
+	</body>
+</html>

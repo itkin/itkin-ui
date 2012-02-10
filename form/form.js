@@ -1,3 +1,6 @@
+// update the object
+// handle the errors
+
 steal('jquery/controller', 'jquery/model/backup', 'jquery/model/validations','jquery/dom/form_params').then(function(){
 
 $.Controller.extend('Itkin.Form',{
@@ -29,8 +32,6 @@ $.Controller.extend('Itkin.Form',{
   basename: function(){
     return this.options.basename || $.String.camelize(this.options.model.Class.shortName)
   },
-
-
   updateObject: function(elt){
     this.options.model.attrs(this.element.formParams()[this.basename()])
     this.removeError(elt)

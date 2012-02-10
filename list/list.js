@@ -5,7 +5,7 @@ steal('jquery/model/list',
 'jquery/controller/view',
 'jquery/view/ejs',
 'mxui/data/order',
-'mxui/util/selectable')
+'mxui/nav/selectable')
 .then('jquery-ui/ui/jquery.effects.core.js')
 .then('jquery-ui/ui/jquery.effects.slide.js')
 .then(
@@ -39,14 +39,13 @@ $.Controller('Itkin.List',
     deleteClass: "delete",
     instanceBelongsToList: function(){return true},
     renderer: function(item){ return item.toString() },
-
 		noItems : "No Items",
 		offsetEmpties: false,
 		// set to false to turn off the filler
 		filler: true,
 		// immediately uses the  model to request items for the grid
 		loadImmediate: true,
-		selectable : function(tbody){ tbody.mxui_util_selectable() } ,
+		selectable : function(tbody){ tbody.mxui_nav_selectable() } ,
     refresh: function(tbody, elt, newElt){
       elt.replaceWith(newElt)
       tbody.resize()
@@ -112,6 +111,7 @@ $.Controller('Itkin.List',
       delete options['params']
     }
     this._super(options)
+    return this
   },
   initTemplate: function(){
     this.element.append(this.view(this.options.initTemplate))
@@ -154,13 +154,13 @@ $.Controller('Itkin.List',
 
   refresh: function(attrs){
     if (!this.options.params.updating){
-      this.$.scrollBody.scroll(0)
       //clear the list without triggering any remove event
       this.options.list.length = 0
       this.options.params.attrs($.extend({},(attrs || {}),{'offset': 0, 'updating': true}))
       clearTimeout(this.newRequestTimer)
       this.newRequestTimer = setTimeout(this.callback('newRequest'), 100)
     }
+    return this
   },
   newRequest : function(attr, val){
 		var clear = true;
@@ -195,10 +195,12 @@ $.Controller('Itkin.List',
 
 		this.options.params.attr('updating', false);
 
-    var trs = this._getRows('rowTemplate', items)
+    var trs = this._getRows('rowTemplate', items).filter("." + this.options.rowClassName)
 
 		if(clear){
 			this.options.empty(this.$.tbody);
+      if (this.$.scrollBody)
+        this.$.scrollBody.scrollTop(0);
 		}
 
 		this.options.append(this.$.tbody, trs);
@@ -210,8 +212,13 @@ $.Controller('Itkin.List',
   },
 
   "new": function(instance){
-    var tr = this._getRows('formTemplate', (instance || new this.options.model()))
-    this.options.prepend.apply(this,[this.$.tbody, tr ])
+    var tr = this._getRows('formTemplate', (instance || new this.options.model())).addClass("form new"),
+        oldForm = this.$.tbody.children('.row.form.new:first')
+    if (oldForm.length == 0){
+      this.options.prepend.apply(this,[this.$.tbody, tr ])
+    } else {
+      this.options.refresh.apply(this,[this.$.tbody, oldForm, tr ])
+    }
   },
 
   "{model} updated" : function(model, ev, item){
@@ -226,7 +233,7 @@ $.Controller('Itkin.List',
   "{model} created" : function(model, ev, item){
     if (this.options.instanceBelongsToList.apply(this, [item])){
       var newEl = this._getRows('rowTemplate', item)
-      this.options.prepend.apply(this,[this.$.tbody, newEl])
+      this.options.refresh.apply(this,[this.$.tbody, this.$.tbody.children('.row.form.new:first'), newEl])
       this.options.params.attr('count', this.options.params.attr('count') +1)
     }
   },
@@ -244,9 +251,8 @@ $.Controller('Itkin.List',
     e.preventDefault()
     e.stopPropagation()
     var tr = elt.closest('.'+this.options.rowClassName)
-    tr.model().update(elt.formParams()[$.String.camelize(tr.model().Class.shortName)], function(){
-      tr.remove()
-    })
+    tr.model().attrs(elt.formParams()[$.String.camelize(tr.model().Class.shortName)])
+    tr.model().save()
   },
 
   ".{deleteClass} click": function(elt, e){
@@ -258,6 +264,7 @@ $.Controller('Itkin.List',
     e.stopPropagation()
     var el = elt.closest('.'+this.options.rowClassName),
         form = this._getRows('formTemplate', el.model())
+
     this.options.refresh.apply(this,[this.$.tbody, el, form])
 
   },
